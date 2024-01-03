@@ -1,9 +1,9 @@
 import Leaflet, { LatLngExpression} from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import * as ReactLeaflet from 'react-leaflet';
-import React, { JSX, useEffect } from 'react';
+import React, { JSX, useState, useEffect } from 'react';
 
-const DynamicMap = ({ className, defaultCenter, defaultZoom, ...rest }: { className: string, defaultCenter: number[], defaultZoom: number, [key: string]: any }) => {
+const DynamicMap = ({ className, mapCenter, defaultZoom, ...rest }: { className: string, mapCenter: LatLngExpression, defaultZoom: number, [key: string]: any }) => {
 
     useEffect(() => {
         (async function init() {
@@ -14,8 +14,6 @@ const DynamicMap = ({ className, defaultCenter, defaultZoom, ...rest }: { classN
             });
         })();
     }, []);
-
-    const mapCenter: LatLngExpression = [defaultCenter[0], defaultCenter[1]];
 
     return (
         <ReactLeaflet.MapContainer className={className} center={mapCenter} zoom={defaultZoom} {...rest}>
@@ -31,11 +29,11 @@ const DynamicMap = ({ className, defaultCenter, defaultZoom, ...rest }: { classN
     )
 }
 
-const DataMap = (props: JSX.IntrinsicAttributes & { className: string; width: number; height: number; center: number[]; zoom: number; }) => {
-    const { width, height, center, zoom } = props;
+const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: LatLngExpression; zoom: number; }) => {
+    const { center, zoom } = props;
     return (
         <div>
-            <DynamicMap {...props} defaultCenter={center} defaultZoom={zoom} />
+            <DynamicMap {...props} mapCenter={center} defaultZoom={zoom} />
         </div>
     )
 }

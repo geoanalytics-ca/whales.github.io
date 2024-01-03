@@ -5,30 +5,33 @@ import { FaImage } from "react-icons/fa6";
 import { 
     Card,
     CardBody,
+    Spinner,
     Checkbox,
     Modal,
     ModalContent, 
     ModalHeader, 
     ModalBody, 
     ModalFooter,
-    Button
+    Button,
+    toggle
 } from "@nextui-org/react";
 
 const DataPane = () => {
+    const [isLoading, setIsLoading] = useState(false);
+    // Track the state of the query parameters
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
-    const [catalog, setCatalog] = useState<Catalog>(); // Update type annotation for catalog
-    const [collections, setCollections] = useState<Collection[]>([]); // Update type annotation for collections
-    const [items, setItems] = useState<Item[]>([]); // Update type annotation for items
+    const [catalog, setCatalog] = useState<Catalog>(); 
+    const [collections, setCollections] = useState<Collection[]>([]); 
+    const [items, setItems] = useState<Item[]>([]); 
     
-    const [collectionSelected, setCollectionSelected] = useState(false);
+    // Track which Item's should be rendered
     const [selectedCollections, setSelectedCollections] = useState<Collection[]>([]); // Track selected collections
     const [selectedItems, setSelectedItems] = useState<Item[]>([]); // Track selected items
-    const [queryResult, setQueryResult] = useState<{ items: Item[] }[]>([]); // Update type annotation for queryResult
     
+    // PNG Modal
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSelected, setIsSelected] = useState(false);
-    const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
     // Fetch the catalog and set it in the state
     const _fetchCatalog = async () => {
@@ -85,16 +88,10 @@ const DataPane = () => {
         }
     }
 
-    useEffect(() => {
-        // Update the disabled state of the button when the relevant values change
-        setIsButtonDisabled(!selectedCollections || !startDate || !endDate);
-      }, [selectedCollections, startDate, endDate]);
-
-
     const handleCollectionChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        setIsLoading(true);
         const selectedCollection = selectedCollections.find((collection) => collection.id === event.target.name);
         if (event.target.checked) {
-            setIsSelected(true);
             if (!selectedCollection) {
                 const collection = collections.find((collection) => collection.id === event.target.name);
                 if (collection) {
@@ -104,9 +101,7 @@ const DataPane = () => {
             }
         }
         else {
-            setIsSelected(false);
             if (selectedCollection) {
-                // setSelectedCollections(prevSelectedCollections => prevSelectedCollections.filter((collection) => collection.id !== event.target.name));
                 const index = selectedCollections.indexOf(selectedCollection);
                 if (index > -1) {
                     selectedCollections.splice(index, 1);
@@ -114,12 +109,13 @@ const DataPane = () => {
             }
         }
         console.log('Selected Collections:', selectedCollections);
+        setIsLoading(false);
     }
 
     const handleItemChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        setIsLoading(true);
         const selectedItem = selectedItems.find((item) => item.id === event.target.name);
         if (event.target.checked) {
-            // setIsSelected(true);
             if (!selectedItem) {
                 const item = items.find((item) => item.id === event.target.name);
                 if (item) {
@@ -128,9 +124,7 @@ const DataPane = () => {
             }
         }
         else {
-            // setIsSelected(false);
             if (selectedItem) {
-                // setSelectedItems(prevSelectedItems => prevSelectedItems.filter((item) => item.id !== event.target.name));
                 const index = selectedItems.indexOf(selectedItem);
                 if (index > -1) {
                     selectedItems.splice(index, 1);
@@ -138,6 +132,7 @@ const DataPane = () => {
             }
         }
         console.log('Selected Items:', selectedItems);
+        setIsLoading(false);
     }
 
     const handleImgOnClick = () => {
@@ -151,8 +146,12 @@ const DataPane = () => {
     return (
         useEffect(() => {
             populateCollections();
+            console.log(isLoading)
         }, [catalog]),
         <Card className='datapane'>
+            <Card >
+                {isLoading && <Spinner color="primary" />}
+            </Card>
             <CardBody>
                 <Card>
                     <CardBody>
@@ -184,7 +183,7 @@ const DataPane = () => {
                         {items && (
                             items.map((item) =>
                                 <Checkbox key={item.id} name={item.id} defaultSelected={false} onChange={handleItemChange}>
-                                    {item.id}
+                                    {item.title}
                                 </Checkbox>
                                 )
                             )

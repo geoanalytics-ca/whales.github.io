@@ -39,6 +39,7 @@ type Asset = {
 // Define the type for the item
 export type Item = {
     id: string;
+    title: string;
     type: string;
     geometry: {
         type: string;

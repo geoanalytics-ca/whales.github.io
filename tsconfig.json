@@ -25,6 +25,7 @@
       "@services/*": [ "src/services/*" ],
       "@stac/*": [ "src/stac/*" ],
       "@types/*": [ "src/types/*" ],
+      "@pages/*": [ "src/pages/*" ],
       "*": ["src/*"]
     }
   },
