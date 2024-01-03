@@ -1,63 +1,39 @@
-'use client';
+import React from 'react';
+import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button} from "@nextui-org/react";
 
-import { Fragment } from 'react';
-import { usePathname } from 'next/navigation';
-import {Navbar, NavbarBrand, NavbarContent, NavbarItem} from "@nextui-org/navbar";
-import {Link} from "@nextui-org/link";
-import {Button, ButtonGroup} from "@nextui-org/button";
+const AcmeLogo = () => (
+  <svg fill="none" height="36" viewBox="0 0 32 32" width="36">
+    <path
+      clipRule="evenodd"
+      d="M17.6482 10.1305L15.8785 7.02583L7.02979 22.5499H10.5278L17.6482 10.1305ZM19.8798 14.0457L18.11 17.1983L19.394 19.4511H16.8453L15.1056 22.5499H24.7272L19.8798 14.0457Z"
+      fill="currentColor"
+      fillRule="evenodd"
+    />
+  </svg>
+);
 
-import Image from 'next/image';
 
-const navigation = [
-  { name: 'Home', href: '/' },
-  { name: 'About', href: '/about' }
-];
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
-}
-
-export default function TopNavBar() {
-  const pathname = usePathname();
-
-  // return (
-  //   <div className="top-navbar w-full fixed top-0 left-0 right-0 h-16 bg-gray-100 border-t border-gray-200 text-black">
-  //       This is the navBar
-  //   </div>
-  // );
+const TopBar = () => {
   return (
-    <Navbar>
+    <Navbar className='navbar'>
       <NavbarBrand>
-        [Insert Logo]
-        <p className="font-bold text-inherit">ACME</p>
+        <AcmeLogo />
+        <p className="font-bold text-inherit">Data Map</p>
       </NavbarBrand>
-      <NavbarContent className="hidden sm:flex gap-4" justify="center">
+      {/* <NavbarContent justify="center">
         <NavbarItem>
-          <Link color="foreground" href="#">
-            Features
+          <Link href="#">
+            Home
           </Link>
         </NavbarItem>
         <NavbarItem isActive>
           <Link href="#" aria-current="page">
-            Customers
+            About
           </Link>
         </NavbarItem>
-        <NavbarItem>
-          <Link color="foreground" href="#">
-            Integrations
-          </Link>
-        </NavbarItem>
-      </NavbarContent>
-      <NavbarContent justify="end">
-        <NavbarItem className="hidden lg:flex">
-          <Link href="#">Login</Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Button as={Link} color="primary" href="#" variant="flat">
-            Sign Up
-          </Button>
-        </NavbarItem>
-      </NavbarContent>
+      </NavbarContent> */}
     </Navbar>
   );
 }
+
+export default TopBar;
