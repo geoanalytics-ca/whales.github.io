@@ -1,11 +1,10 @@
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
-import { LatLngExpression } from 'leaflet';
 import Layout from '@components/Layout';
 
 import { Card } from '@nextui-org/react';
 
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 
 const MapComponent = dynamic(() => {
   return import('@components/Map')
@@ -17,8 +16,10 @@ const DataComponent = dynamic(() => {
   return import('@components/DataPane')
 });
 
-const Home = () => {
-  const [mapCenter, setMapCenter] = useState<LatLngExpression>([38.907132, -77.036546]);
+const Stream2 = (
+  { mapCenter, setMapCenter, mapZoom } : { mapCenter: number[], setMapCenter: Dispatch<SetStateAction<number[]>>, mapZoom: number}
+) => {
+  console.log('Starting up Stream 2 UI')
   return (
     <>
     <Layout className='layout'>
@@ -28,7 +29,7 @@ const Home = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-        <MapComponent className="map" center={mapCenter} zoom={12} >
+        <MapComponent className="map" center={mapCenter} zoom={mapZoom} >
         </MapComponent>
         <Card>
           <DataComponent>
@@ -39,4 +40,4 @@ const Home = () => {
   )
 }
 
-export default Home;
+export default Stream2;

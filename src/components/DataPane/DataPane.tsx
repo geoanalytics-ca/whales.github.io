@@ -1,6 +1,6 @@
 import { fetchCatalog, fetchCollection, fetchItems, fetchItem } from '@services/stac';
 import React, { useState, useEffect } from 'react';
-import { Catalog, Collection, Item } from '@stac/StacObjects';
+import { Catalog, Collection, Item, STACLink } from '@stac/StacObjects';
 import { FaImage } from "react-icons/fa6";
 import { 
     Card,
@@ -17,7 +17,6 @@ import {
 } from "@nextui-org/react";
 
 const DataPane = () => {
-    const [isLoading, setIsLoading] = useState(false);
     // Track the state of the query parameters
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
@@ -37,18 +36,6 @@ const DataPane = () => {
     const _fetchCatalog = async () => {
         const catalogData = await fetchCatalog();
         setCatalog(catalogData);
-    };
-
-    // Fetch the collection and set it in the state
-    const _fetchCollection = async (collectionId: string, collectionLink: string) => {
-        console.log('Looking for collection:', collectionId);
-        const isCollectionPresent = collections.some(c => c.id === collectionId);
-        console.log('isCollectionPresent:', isCollectionPresent);
-        if (!isCollectionPresent) {
-            console.log('Collection not present. Fetching...');
-            const collection: Collection = await fetchCollection(collectionLink);
-            setCollections(prevCollections => [...prevCollections, collection]); // Add the selected collection to the list of collections
-        }
     };
 
     // Fetch the items and set them in the state
@@ -78,18 +65,7 @@ const DataPane = () => {
         fetchData();
     }, []); // Run once on component mount
 
-    const populateCollections = async () => {
-        if (catalog) {
-            for (const link of catalog.links) {
-                if (link.rel === 'child') {
-                    await _fetchCollection(link.title, link.href);
-                }
-            }
-        }
-    }
-
     const handleCollectionChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        setIsLoading(true);
         const selectedCollection = selectedCollections.find((collection) => collection.id === event.target.name);
         if (event.target.checked) {
             if (!selectedCollection) {
@@ -109,30 +85,22 @@ const DataPane = () => {
             }
         }
         console.log('Selected Collections:', selectedCollections);
-        setIsLoading(false);
     }
 
     const handleItemChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        setIsLoading(true);
-        const selectedItem = selectedItems.find((item) => item.id === event.target.name);
-        if (event.target.checked) {
-            if (!selectedItem) {
-                const item = items.find((item) => item.id === event.target.name);
+        console.log('Item changed:', event.target.name, event.target.checked);
+        const selectedItem = selectedItems.some((item) => item.title === event.target.name);
+        const item = items.find((item) => item.title === event.target.name);
+        console.log('selectedItem:', selectedItem);
+        if (event.target.checked && !selectedItem) {
                 if (item) {
                     selectedItems.push(item);
                 }
-            }
         }
         else {
-            if (selectedItem) {
-                const index = selectedItems.indexOf(selectedItem);
-                if (index > -1) {
-                    selectedItems.splice(index, 1);
-                }
-            }
+            (item && selectedItems.splice(selectedItems.indexOf(item), 1));
         }
         console.log('Selected Items:', selectedItems);
-        setIsLoading(false);
     }
 
     const handleImgOnClick = () => {
@@ -143,15 +111,28 @@ const DataPane = () => {
         setIsModalOpen(false);
     }
 
+    useEffect(() => {
+        const fetchData = async (catalog: Catalog) => {
+            const links: STACLink[] = catalog.links.filter((link) => link.rel === 'child');
+            if (links) {
+                for (const link of links) {
+                    console.log('Looking for collection:', link.title);
+                    const isCollectionPresent = collections.some(c => c.id === link.title);
+                    console.log('isCollectionPresent:', isCollectionPresent);
+                    if (!isCollectionPresent) {
+                        console.log('Collection not present. Fetching...');
+                        const collection: Collection = await fetchCollection(link.href);
+                        // setCollections(prevCollections => [...prevCollections, collection]); // Add the selected collection to the list of collections
+                        collections.push(collection);
+                    }
+                }
+            }
+        };
+        catalog && fetchData(catalog);
+        }, [catalog, collections]); // Run once on component mount
+
     return (
-        useEffect(() => {
-            populateCollections();
-            console.log(isLoading)
-        }, [catalog]),
         <Card className='datapane'>
-            <Card >
-                {isLoading && <Spinner color="primary" />}
-            </Card>
             <CardBody>
                 <Card>
                     <CardBody>
@@ -182,7 +163,7 @@ const DataPane = () => {
                         Items:
                         {items && (
                             items.map((item) =>
-                                <Checkbox key={item.id} name={item.id} defaultSelected={false} onChange={handleItemChange}>
+                                <Checkbox key={item.title} name={item.title} defaultSelected={false} onChange={handleItemChange}>
                                     {item.title}
                                 </Checkbox>
                                 )

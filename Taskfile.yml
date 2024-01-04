@@ -3,10 +3,12 @@
 version: '3'
 
 vars:
-  ACR_NAME: 
+  ACR_NAME: geoanalytics
+  IMAGE_NAME: geoanalytics/services/webmap
+  IMAGE_TAG: 0.0.1
 
 tasks:
   
   build:
     cmds:
-      - az acr build --registry $ACR_NAME --image $IMAGE_NAME --file Containerfile .
+      - az acr build --registry {{.ACR_NAME}} --image {{.IMAGE_NAME}}:{{.IMAGE_TAG}} --file Containerfile .

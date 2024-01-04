@@ -68,53 +68,9 @@ type TableProps = {
 //         </Card>
 //     );
 // }
-
-
-const DetectionTable = ({ detections }: { detections: Detection[] }): JSX.Element => {
-    const [table, setTable] = useState<JSX.Element | null>(null);
-
-    useEffect(() => {
-        const table = (
-            <Table aria-label="Example static collection table">
-                <TableHeader>
-                    <TableColumn>ID</TableColumn>
-                    <TableColumn>Scene Name</TableColumn>
-                    <TableColumn>Detection Type</TableColumn>
-                    <TableColumn>Confidence</TableColumn>
-                    <TableColumn>Loc.</TableColumn>
-                    <TableColumn>Image</TableColumn>
-                </TableHeader>
-                <TableBody>
-                    {
-                        detections.length !== 0 && (
-                        Array.isArray(detections) && (
-                            detections.map((detection, index) => (
-                                <TableRow key={index} textValue={detection.chipped_sat}> 
-                                    <TableCell>{detection.id}</TableCell>
-                                    <TableCell>{detection.scene_name}</TableCell>
-                                    <TableCell>{detection.detection_type}</TableCell>
-                                    <TableCell>{detection.confidence}</TableCell>
-                                    <TableCell>{detection.px}, {detection.py}</TableCell>
-                                    <TableCell>{detection.chipped_sat}</TableCell>
-                                </TableRow>
-                            ))
-                        )
-                    )}
-                </TableBody>
-            </Table>
-        );
-        setTable(table);
-    }, [detections]);
-
-    return (
-        <>
-            {table}
-        </>
-    );
-};
                         
 
-const WhaleTable = ({ setMapCenter }: { setMapCenter:  React.Dispatch<React.SetStateAction<LatLngExpression>> }) => {
+const WhaleTable = ({ setMapCenter }: { setMapCenter:  React.Dispatch<React.SetStateAction<number[]>> }) => {
 
      var DetectionTypes = {
         "validated_definite": "validated_definite",
@@ -138,6 +94,7 @@ const WhaleTable = ({ setMapCenter }: { setMapCenter:  React.Dispatch<React.SetS
     console.log('endDate', endDate)
     console.log('detectionType', DetectionTypes['validated_definite'])
     console.log('detections', detections)
+
 
     // useEffect(() => {
     //     let fetchData;
@@ -183,7 +140,7 @@ const WhaleTable = ({ setMapCenter }: { setMapCenter:  React.Dispatch<React.SetS
                 // throw error;
                 setDetections([]);
             } finally {
-                console.log('detections', detections)
+                
             }
         };
         fetchDetections();
@@ -209,7 +166,45 @@ const WhaleTable = ({ setMapCenter }: { setMapCenter:  React.Dispatch<React.SetS
                     </select>
                 </div>
                 <div>
-                    <DetectionTable detections={detections} />
+                { detections.length !== 0 ? (
+                    Array.isArray(detections) && (
+                        <Table aria-label="Example static collection table">
+                            <TableHeader>
+                                <TableColumn>ID</TableColumn>
+                                <TableColumn>Scene Name</TableColumn>
+                                <TableColumn>Detection Type</TableColumn>
+                                <TableColumn>Confidence</TableColumn>
+                                <TableColumn>Loc.</TableColumn>
+                                <TableColumn>Image</TableColumn>
+                            </TableHeader>
+                            <TableBody>
+                                {
+                                    detections.map((detection, index) => (
+                                        <TableRow key={index} textValue={detection.chipped_sat}> 
+                                            <TableCell>{detection.id}</TableCell>
+                                            <TableCell>{detection.scene_name}</TableCell>
+                                            <TableCell>{detection.detection_type}</TableCell>
+                                            <TableCell>{detection.confidence}</TableCell>
+                                            <TableCell>{detection.px}, {detection.py}</TableCell>
+                                            <TableCell>{detection.chipped_sat}</TableCell>
+                                        </TableRow>
+                                    ))
+                                }
+                            </TableBody>
+                        </Table>
+                    )
+                ) : (
+                    <Table aria-label="Example static collection table">
+                    <TableHeader>
+                        <TableColumn>Loading...</TableColumn>
+                    </TableHeader>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell><Spinner /></TableCell>
+                        </TableRow>
+                    </TableBody>
+                    </Table>
+                )}  
                 </div>
             </div>
         </>

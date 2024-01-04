@@ -1,20 +1,21 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { assert } from 'console';
 
 class SBDSClient {
     private axiosInstance: AxiosInstance;
 
     constructor(baseURL: string) {
-        if (process.env.NEXT_PUBLIC_SBDS_KEY) {
+        const sbdsKey = process.env.NEXT_PUBLIC_SBDS_KEY?.trim();
+
+        if (sbdsKey) {
             this.axiosInstance = axios.create({
                 baseURL,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SBDS_KEY.trim()}`
+                    'Authorization': `Bearer ${sbdsKey}`
                 },
             });
         } else {
-            throw new Error('SBDS_KEY environment variable not set');
+            console.log('SBDS key not found');
         }
     }
 

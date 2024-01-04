@@ -1,5 +1,5 @@
 
-type STACLink = {
+export type STACLink = {
     rel: string;
     href: string;
     title: string;
@@ -27,7 +27,7 @@ export type Collection = {
     // Add any additional properties specific to your STAC Collection
 };
 
-type Asset = {
+export type Asset = {
     href: string;
     type: string;
     title: string;

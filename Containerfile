@@ -1,6 +1,7 @@
 # Use the official Node.js 14 image as the base image
 FROM node:21.5.0-slim
 
+RUN npm install -g npm
 # Set the working directory inside the container
 WORKDIR /app
 
@@ -15,9 +16,6 @@ COPY . .
 
 # Build the Next.js application
 RUN npm run build
-
-# Expose the port that the Next.js application will run on
-EXPOSE 3000
 
 # Start the Next.js application
 CMD ["npm", "start"]

@@ -3,7 +3,9 @@ import 'leaflet/dist/leaflet.css';
 import * as ReactLeaflet from 'react-leaflet';
 import React, { JSX, useState, useEffect } from 'react';
 
-const DynamicMap = ({ className, mapCenter, defaultZoom, ...rest }: { className: string, mapCenter: LatLngExpression, defaultZoom: number, [key: string]: any }) => {
+const DynamicMap = ({ className, mapCenter, defaultZoom, ...rest }: { className: string, mapCenter: number[], defaultZoom: number, [key: string]: any }) => {
+
+    const latlngCenter: LatLngExpression = [mapCenter[0], mapCenter[1]];
 
     useEffect(() => {
         (async function init() {
@@ -16,7 +18,7 @@ const DynamicMap = ({ className, mapCenter, defaultZoom, ...rest }: { className:
     }, []);
 
     return (
-        <ReactLeaflet.MapContainer className={className} center={mapCenter} zoom={defaultZoom} {...rest}>
+        <ReactLeaflet.MapContainer className={className} center={latlngCenter} zoom={defaultZoom} {...rest}>
             <ReactLeaflet.TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 // attribution="Map data &copy; <a href=&quot;https://www.openstreetmap.org/&quot;>OpenStreetMap</a> contributors"
@@ -29,7 +31,7 @@ const DynamicMap = ({ className, mapCenter, defaultZoom, ...rest }: { className:
     )
 }
 
-const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: LatLngExpression; zoom: number; }) => {
+const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: number[]; zoom: number; }) => {
     const { center, zoom } = props;
     return (
         <div>
