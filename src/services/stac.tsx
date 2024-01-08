@@ -47,7 +47,6 @@ export const fetchItems = async (collection: Collection, startDateTime: string, 
         searchDates.push(currentDate.toISOString().split('T')[0]);
         currentDate.setDate(currentDate.getDate() + 1);
     }
-    console.log('validDates', searchDates);
 
     switch (collection.id) {
         case 'acri':
@@ -77,4 +76,4 @@ export const fetchItem = async (itemLink: string): Promise<any> => {
         console.error('Error fetching item:', error);
         throw error;
     }
-}
+};

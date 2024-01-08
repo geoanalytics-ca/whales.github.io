@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
 class SBDSClient {
-    private axiosInstance: AxiosInstance;
+    private axiosInstance!: AxiosInstance;
 
     constructor(baseURL: string) {
         const sbdsKey = process.env.NEXT_PUBLIC_SBDS_KEY?.trim();

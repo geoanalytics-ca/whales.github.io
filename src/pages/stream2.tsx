@@ -1,10 +1,14 @@
+require('@styles/tailwind.css');
+
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import Layout from '@components/Layout';
 
 import { Card } from '@nextui-org/react';
 
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { useState } from 'react';
+
+import { Catalog, Collection, Item, STACLink } from '@stac/StacObjects';
 
 const MapComponent = dynamic(() => {
   return import('@components/Map')
@@ -16,9 +20,15 @@ const DataComponent = dynamic(() => {
   return import('@components/DataPane')
 });
 
-const Stream2 = (
-  { mapCenter, setMapCenter, mapZoom } : { mapCenter: number[], setMapCenter: Dispatch<SetStateAction<number[]>>, mapZoom: number}
-) => {
+const Stream2 = () => {
+  const [mapCenter, setMapCenter] = useState<number[]>([38.907132, -77.036546]);
+  const [mapZoom, setMapZoom] = useState<number>(12);
+
+  const [catalog, setCatalog] = useState<Catalog>(); 
+  const [collections, setCollections] = useState<Collection[]>([]);     
+  const [itemLinks, setItemLinks] = useState<STACLink[]>([]);
+
+
   console.log('Starting up Stream 2 UI')
   return (
     <>
@@ -32,7 +42,10 @@ const Stream2 = (
         <MapComponent className="map" center={mapCenter} zoom={mapZoom} >
         </MapComponent>
         <Card>
-          <DataComponent>
+          <DataComponent 
+            mapCenter={mapCenter} setMapCenter={setMapCenter} mapZoom={mapZoom}
+            catalog={catalog} setCatalog={setCatalog} collections={collections} setCollections={setCollections} itemLinks={itemLinks} setItemLinks={setItemLinks}
+            >
           </DataComponent>
         </Card>
     </Layout>

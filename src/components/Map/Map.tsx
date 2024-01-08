@@ -23,10 +23,9 @@ const DynamicMap = ({ className, mapCenter, defaultZoom, ...rest }: { className:
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 // attribution="Map data &copy; <a href=&quot;https://www.openstreetmap.org/&quot;>OpenStreetMap</a> contributors"
             />
-            {/* <ReactLeaflet.TileLayer
+            <ReactLeaflet.TileLayer
                 url="https://titiler.xyz"
-            /> */}
-            {/* {typeof children === 'function' && children(ReactLeaflet || {}, Leaflet || {})} */}
+            />
         </ReactLeaflet.MapContainer>
     )
 }

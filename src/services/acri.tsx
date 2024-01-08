@@ -7,6 +7,6 @@ export const fetchItemRefACRI = async (collection: Collection, searchDates: stri
         });
     };
     const validDates = filterStringsBySubstring(collection.links as STACLink[], searchDates);
-    console.log('validDates', validDates);
+    console.log('valid Items', validDates);
     return validDates;
-    }
+};

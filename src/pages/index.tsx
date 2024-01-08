@@ -1,23 +1,54 @@
-import React, { useState, useEffect } from 'react';
-import Stream1 from '@pages/stream1';
-import Stream2 from '@pages/stream2';
+import dynamic from 'next/dynamic';
+import Head from 'next/head';
+import Layout from '@components/Layout';
 
-const Index = () => {
-  const [Page, setPage] = useState<JSX.Element>(<div></div>);
-  const [topMapCenter, setTopMapCenter] = useState<number[]>([38.907132, -77.036546]);
-  const [topMapZoom, setTopMapZoom] = useState<number>(12);
-  const scenario: string = process.env.NEXT_PUBLIC_STREAM || 'stream1';
-  
+import { Card } from '@nextui-org/react';
+
+import React, { useState } from 'react';
+
+import { Catalog, Collection, Item, STACLink } from '@stac/StacObjects';
+
+const MapComponent = dynamic(() => {
+  return import('@components/Map')
+}, {
+  ssr: false,
+});
+
+const DataComponent = dynamic(() => {
+  return import('@components/DataPane')
+});
+
+const Stream2 = () => {
+  const [mapCenter, setMapCenter] = useState<number[]>([38.907132, -77.036546]);
+  const [mapZoom, setMapZoom] = useState<number>(12);
+
+  const [catalog, setCatalog] = useState<Catalog>(); 
+  const [collections, setCollections] = useState<Collection[]>([]);     
+  const [itemLinks, setItemLinks] = useState<STACLink[]>([]);
+
+
+  console.log('Starting up Stream 2 UI')
   return (
-    <div>
-      {scenario === 'stream1' && (
-        <Stream1 mapCenter={topMapCenter} setMapCenter={setTopMapCenter} mapZoom={topMapZoom} />
-      )}
-      {scenario === 'stream2' && (
-        <Stream2 mapCenter={topMapCenter} setMapCenter={setTopMapCenter} mapZoom={topMapZoom} />
-      )}
-    </div>
-  );
-};
+    <>
+    <Layout className='layout'>
+      <Head>
+        <title>DataMap</title>
+        <meta name="description" content="Create mapping apps with Next.js Leaflet Starter" />
+        <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+        <MapComponent className="map" center={mapCenter} zoom={mapZoom} >
+        </MapComponent>
+        <Card>
+          <DataComponent 
+            mapCenter={mapCenter} setMapCenter={setMapCenter} mapZoom={mapZoom}
+            catalog={catalog} setCatalog={setCatalog} collections={collections} setCollections={setCollections} itemLinks={itemLinks} setItemLinks={setItemLinks}
+            >
+          </DataComponent>
+        </Card>
+    </Layout>
+    </>
+  )
+}
 
-export default Index;
+export default Stream2;

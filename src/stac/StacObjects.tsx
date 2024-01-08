@@ -5,6 +5,9 @@ export type STACLink = {
     title: string;
     id: string;
     type?: string;
+    parent?: string;
+    data?: string;
+    png?: string;
 };
 
 // Define the type for the catalog
@@ -72,7 +75,7 @@ export type Item = {
             nodata: number;
         }[];
     };
-    assets: Asset[];
+    assets: Record<string, Asset>;
     links: STACLink[];
     // Add any additional properties specific to your STAC Item
 };

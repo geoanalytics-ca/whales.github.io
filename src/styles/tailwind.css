@@ -93,14 +93,6 @@ body {
   border: 1px solid blue; 
   z-index: 5000; 
 }
-
-.date-box {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 10px;
-  background: rgba(0, 0, 0, 0.5);
-}
   
 .checkboxes {
   display: flex;
@@ -135,15 +127,34 @@ body {
   background-color: #003080;
 }
 
-.item-list {
+.date-box {
+  display: flex;
+  align-items: left;
+  justify-content: left;
+  margin: 10px;
+  height: 80%;
+  width: 100%;
+}
+
+.collection-pane {
   display: flex;
   flex-direction: column;
   align-items: left;
-  height: 250px;
+  justify-content: left;
+  margin: 10px;
+  height: 80%;
+  width: 100%;
+}
+
+.item-pane {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  justify-content: left;
   overflow: auto;
   margin: 10px;
-  padding: 5px;
-  background: rgba(0, 0, 0, 0.5);
+  height: 10%;
+  width: 100%;
 }
 
 .item-title {
@@ -157,10 +168,10 @@ body {
   top: 70px;
   bottom: 40px;
   right: 0;
-  width: 25%;
+  width: 35%;
+  min-width: 250px;
   height: calc(100% - 70px - 40px);
   /* background: rgba(9, 9, 9, 0.75); */
-  overflow-y: auto;
   z-index: 1000;
   /* border: 1px solid red; */
 }
