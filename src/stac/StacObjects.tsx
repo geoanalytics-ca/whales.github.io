@@ -6,8 +6,6 @@ export type STACLink = {
     id: string;
     type?: string;
     parent?: string;
-    data?: string;
-    png?: string;
 };
 
 // Define the type for the catalog

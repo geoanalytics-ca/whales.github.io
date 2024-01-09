@@ -1,3 +1,5 @@
+// require('@styles/tailwind.css');
+
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import Layout from '@components/Layout';
@@ -21,6 +23,7 @@ const DataComponent = dynamic(() => {
 const Stream2 = () => {
   const [mapCenter, setMapCenter] = useState<number[]>([38.907132, -77.036546]);
   const [mapZoom, setMapZoom] = useState<number>(12);
+  const [mapData, setMapData] = useState<string>('');
 
   const [catalog, setCatalog] = useState<Catalog>(); 
   const [collections, setCollections] = useState<Collection[]>([]);     
@@ -37,11 +40,11 @@ const Stream2 = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-        <MapComponent className="map" center={mapCenter} zoom={mapZoom} >
+        <MapComponent className="map" center={mapCenter} zoom={mapZoom} mapData={mapData} >
         </MapComponent>
         <Card>
           <DataComponent 
-            mapCenter={mapCenter} setMapCenter={setMapCenter} mapZoom={mapZoom}
+            mapCenter={mapCenter} setMapCenter={setMapCenter} mapZoom={mapZoom} mapData={mapData} setMapData={setMapData}
             catalog={catalog} setCatalog={setCatalog} collections={collections} setCollections={setCollections} itemLinks={itemLinks} setItemLinks={setItemLinks}
             >
           </DataComponent>

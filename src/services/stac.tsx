@@ -70,7 +70,7 @@ export const fetchItem = async (itemLink: string): Promise<any> => {
                 'Content-Type': 'application/json',
             },
         });
-        console.log('Item:', response.data); // Add this line
+        // console.log('Item:', response.data); // Add this line
         return response.data;
     } catch (error) {
         console.error('Error fetching item:', error);
