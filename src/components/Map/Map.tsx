@@ -1,49 +1,74 @@
-import Leaflet, { LatLngExpression} from 'leaflet';
+import { LatLngExpression} from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import * as ReactLeaflet from 'react-leaflet';
-import React, { JSX, useEffect } from 'react';
+import React, { JSX, useEffect, useState } from 'react';
+import { mapMarker } from '../../types/map';
+import { Button } from '@nextui-org/react';
 
-const DynamicMap = ({ className, mapCenter, defaultZoom, mapData, ...rest }: { className: string, mapCenter: number[], defaultZoom: number, mapData: string, [key: string]: any }) => {
+const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: number[]; zoom: number; mapData: string, mapMarkers: mapMarker[]}) => {
+    const { className, center, zoom, mapData, mapMarkers } = props;
+    const [tileJson, setTileJson] = useState<any>(null);
+    const latlngCenter: LatLngExpression = [center[0], center[1]];
 
-    const latlngCenter: LatLngExpression = [mapCenter[0], mapCenter[1]];
+    useEffect(() => {
+        const fetchTileJson = async () => {
+            const response = await fetch(`https://titiler.xyz/cog/tilejson.json?url=${mapData}`);
+            const data = await response.json();
+            setTileJson(data);
+            console.log('TileJSON:', data);
+        }
+        fetchTileJson();
+    }, [mapData]);
 
-    console.log('mapData', mapData);
 
-    // useEffect(() => {
-    //     (async function init() {
-    //         Leaflet.Icon.Default.mergeOptions({
-    //             iconRetinaUrl: 'leaflet/images/marker-icon-2x.png',
-    //             iconUrl: 'leaflet/images/marker-icon.png',
-    //             shadowUrl: 'leaflet/images/marker-shadow.png',
-    //         });
-    //     })();
-    // }, []);
+    const Tiles = (tileJson: any) => {
+        return (
+            (tileJson && tileJson.tiles) ? (
+                <ReactLeaflet.TileLayer
+                    url={tileJson.tiles[0]}
+                    tileSize={512}
+                    minZoom={2}
+                    crossOrigin={false}
+                />
+            ) : (
+                <></>
+            )
+        )
+    };
 
     return (
-        <ReactLeaflet.MapContainer className={className} center={latlngCenter} zoom={defaultZoom} {...rest}>
+        <ReactLeaflet.MapContainer className={className} center={latlngCenter} zoom={zoom} >
+            < Tiles tileJson={tileJson} />
+            <>{
+                (mapMarkers && mapMarkers.length > 0 && (
+                    console.log('mapMarkers:', mapMarkers),
+                    <></>
+                    // mapMarkers.map((marker: mapMarker) => (
+                    //     <ReactLeaflet.Marker
+                    //         key={marker.det.id}
+                    //         position={[marker.det.centroid[0], marker.det.centroid[1]]}
+                    //         eventHandlers={{
+                    //             click: () => {
+                    //                 marker.preview(marker.det.blob_name);
+                    //             }
+                    //         }}
+                    //     >
+                    //         <ReactLeaflet.Popup>
+                    //             <div>
+                    //                 <h2>{marker.det.id}</h2>
+                    //                 <p>{marker.det.confidence}</p>
+                    //             </div>
+                    //         </ReactLeaflet.Popup>
+                    //     </ReactLeaflet.Marker>
+                    )
+                )
+            }</>
+
             <ReactLeaflet.TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                // attribution="Map data &copy; <a href=&quot;https://www.openstreetmap.org/&quot;>OpenStreetMap</a> contributors"
+                attribution="&copy; OpenStreetMap contributors"
             />
-            {(mapData && (
-                <ReactLeaflet.TileLayer
-                    url={`https://titiler.xyz/stac/viewer?url=${mapData}`}
-                    tileSize={512}
-                    zoomOffset={-1}
-                    minZoom={0}
-                    crossOrigin={true}
-                />
-            ))}
         </ReactLeaflet.MapContainer>
-    )
-}
-
-const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: number[]; zoom: number; mapData: string}) => {
-    const { center, zoom, mapData } = props;
-    return (
-        <div>
-            <DynamicMap {...props} mapCenter={center} defaultZoom={zoom} mapData={mapData} />
-        </div>
     )
 }
 

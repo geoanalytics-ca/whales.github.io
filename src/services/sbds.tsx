@@ -1,50 +1,36 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios from 'axios';
 
-class SBDSClient {
-    private axiosInstance!: AxiosInstance;
+import { Detection } from '../types/db';
 
-    constructor(baseURL: string) {
-        const sbdsKey = process.env.NEXT_PUBLIC_SBDS_KEY?.trim();
+const apiURL = "/api/whalemap"
 
-        if (sbdsKey) {
-            this.axiosInstance = axios.create({
-                baseURL,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${sbdsKey}`
-                },
-            });
-        } else {
-            console.log('SBDS key not found');
-        }
+export const getDetections = async (startDate: string, endDate: string, detectionType: string): Promise<any> => {
+    const params = {
+        'startdate': startDate,
+        'enddate': endDate,
+        'detectiontype': detectionType
+    };
+    console.log('params', params);
+    const response = await axios.get(`${apiURL}/detections`, {
+        params: params,
+        headers: {'Content-Type': 'application/json'},
+    });
+
+    if (response.status == 204) {
+        return [];
     }
-
-    public async getChipMetadata<T>(chipId: number): Promise<T> {
-        const payload = {
-            chip_id: chipId
-        };
-        const response: AxiosResponse<T> = await this.axiosInstance.get('/chip-metadata', {params: payload});
-        return response.data;
-    }
-
-    public async getDetections<T>(startDate: string, endDate: string, detectionType: string): Promise<T> {
-        const payload = {
-            start_date: startDate,
-            end_date: endDate,
-            detection_type: detectionType
-        };
-        const response: AxiosResponse<T> = await this.axiosInstance.get('/detections', {params: payload});
-        return response.data;
-    }
-
-    public async getBlobSAS<T>(blobName: string): Promise<T> {
-        const payload = {
-            blob_name: blobName
-        };
-        const response: AxiosResponse<T> = await this.axiosInstance.get('/blob-sas', {params: payload});
-        return response.data;
-    }
-
+        
+    return response.data.detections;
 }
 
-export default SBDSClient;
+export const getBlobSAS = async (blobName: string, setBlobSAS: React.Dispatch<React.SetStateAction<string>> ) => {
+    const params = {
+        blob_name: blobName
+    };
+    const response = await axios.get(
+        `${apiURL}/blobsas`, {
+        params: params,
+        headers: {'Content-Type': 'application/json'},
+    });
+    setBlobSAS(response.data.blobsas);
+}

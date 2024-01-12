@@ -1,6 +1,6 @@
 import { fetchCatalog, fetchCollection, fetchItems, fetchItem } from '@services/stac';
 import React, { useState, useEffect, use } from 'react';
-import { Catalog, Collection, Item, STACLink } from '@stac/StacObjects';
+import { Catalog, Collection, Asset, STACLink } from '@stac/StacObjects';
 import { FaImage, FaMap } from "react-icons/fa";
 import { 
     Card,
@@ -13,10 +13,10 @@ import {
 
 const DataPane = (
     { 
-        mapCenter, setMapCenter, mapZoom, mapData, setMapData,
+        mapCenter, setMapCenter, mapZoom, setMapData,
         catalog, setCatalog, collections, setCollections, itemLinks, setItemLinks,
     } : { 
-        mapCenter: number[], setMapCenter: React.Dispatch<React.SetStateAction<number[]>>, mapZoom: number, mapData: string, setMapData: React.Dispatch<React.SetStateAction<string>>,
+        mapCenter: number[], setMapCenter: React.Dispatch<React.SetStateAction<number[]>>, mapZoom: number, setMapData: React.Dispatch<React.SetStateAction<string>>,
         catalog: Catalog | undefined, setCatalog: React.Dispatch<React.SetStateAction<Catalog | undefined>>, collections: Collection[], setCollections: React.Dispatch<React.SetStateAction<Collection[]>>, itemLinks: STACLink[], setItemLinks: React.Dispatch<React.SetStateAction<STACLink[]>>,
     }
     ) => {
@@ -95,16 +95,23 @@ const DataPane = (
         const itemLink = itemLinks.find((itemLink) => itemLink.title === clickedItem);
         itemLink && fetchItem(itemLink.href).then((item) => {
             console.log('Item:', item);
-            const ref = item.assets.reference
-            console.log('Reference:', ref);
-            (ref) ? (
-                // setMapData(ref.href)
-                setMapData(`https://titiler.xyz/stac/tilejson.json?url=${itemLink.href}&assets=reference`)
-            ) : (
-                console.log('No Reference')
-            );
+            item.assets && Object.keys(item.assets).map((key) => {
+                const asset = item.assets[key];
+                if (
+                    key !== 'reference' &&
+                    key !== 'data' &&
+                    key !== 'netcdf' &&
+                    key !== 'image' &&
+                    !asset.title.includes('flags')
+                ) {
+                    console.log('Asset:', asset);
+                    setMapData(asset.href);
+                }
+            });
         });
     };
+
+    // https://acri.blob.core.windows.net/acri/ACRI/ATLNW/merged/day/2022/04/17/L3m_20220417__ATLNW_1_AV-MOD_NRRS469_DAY_00.NRRS469_mean.tif
 
     useEffect(() => {
         handleItemSelection();

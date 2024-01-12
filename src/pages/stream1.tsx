@@ -5,6 +5,7 @@ import Head from 'next/head';
 import Layout from '@components/Layout';
 import { Card } from '@nextui-org/react';
 
+import { mapMarker } from "../types/map";
 
 const MapComponent = dynamic(() => {
     return import('@components/Map')
@@ -17,9 +18,10 @@ const TableComponent = dynamic(() => {
 });
 
 const Stream1 = () => {
-
-    const [mapCenter, setMapCenter] = useState<number[]>([38.907132, -77.036546]);
-    const [mapZoom, setMapZoom] = useState<number>(12);
+  const [mapCenter, setMapCenter] = useState<number[]>([47.733359, -62.465233]);
+  const [mapZoom, setMapZoom] = useState<number>(8);
+  const [mapData, setMapData] = useState<string>('');
+  const [mapMarkers, setMapMarkers] = useState<mapMarker[]>([]);
 
     console.log('Starting up Stream 1 UI')
     return (
@@ -31,12 +33,12 @@ const Stream1 = () => {
                 <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-                <MapComponent className="stream1-map" center={mapCenter} zoom={mapZoom} >
-                </MapComponent>
-                <Card>
-                    <TableComponent setMapCenter={setMapCenter}>
-                    </TableComponent>
-                </Card>
+              <MapComponent className="map" center={mapCenter} zoom={mapZoom} mapData={mapData} mapMarkers={mapMarkers} >
+              </MapComponent>
+              <Card>
+                  <TableComponent setMapCenter={setMapCenter} setMapMarkers={setMapMarkers}>
+                  </TableComponent>
+              </Card>
             </Layout>
         </>
     )

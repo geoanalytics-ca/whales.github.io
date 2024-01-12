@@ -1,5 +1,6 @@
 {
-  "name": "jason-test-nextjs-ghpages",
+  "name": "whales-webmap",
+  "homepage": "https://smartwhales-dev.geoanalytics.ca/whalemap",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -19,7 +20,9 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.12.0",
     "react-leaflet": "^4.2.1",
-    "sass": "^1.69.5"
+    "sass": "^1.69.5",
+    "serve": "^14.2.1",
+    "xarray": "^0.0.3"
   },
   "devDependencies": {
     "@types/leaflet": "^1.9.6",

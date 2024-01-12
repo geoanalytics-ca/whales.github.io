@@ -1,4 +1,4 @@
-require('@styles/tailwind.css');
+// require('@styles/tailwind.css');
 
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
@@ -9,6 +9,13 @@ import { Card } from '@nextui-org/react';
 import React, { useState } from 'react';
 
 import { Catalog, Collection, Item, STACLink } from '@stac/StacObjects';
+
+export type mapMarker = {
+  lat: number;
+  lng: number;
+  label: string;
+  preview: React.Dispatch<React.SetStateAction<string>>
+}
 
 const MapComponent = dynamic(() => {
   return import('@components/Map')
@@ -21,8 +28,8 @@ const DataComponent = dynamic(() => {
 });
 
 const Stream2 = () => {
-  const [mapCenter, setMapCenter] = useState<number[]>([38.907132, -77.036546]);
-  const [mapZoom, setMapZoom] = useState<number>(12);
+  const [mapCenter, setMapCenter] = useState<number[]>([47.733359, -62.465233]);
+  const [mapZoom, setMapZoom] = useState<number>(8);
   const [mapData, setMapData] = useState<string>('');
 
   const [catalog, setCatalog] = useState<Catalog>(); 
@@ -40,7 +47,7 @@ const Stream2 = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-        <MapComponent className="map" center={mapCenter} zoom={mapZoom} mapData={mapData} >
+        <MapComponent className="map" center={mapCenter} zoom={mapZoom} mapData={mapData} mapMarkers={[]} >
         </MapComponent>
         <Card>
           <DataComponent 

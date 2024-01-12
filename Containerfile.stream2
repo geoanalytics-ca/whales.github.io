@@ -13,9 +13,10 @@ RUN npm install
 
 # Copy the rest of the application code to the working directory
 COPY . .
+COPY src/pages/stream2.tsx src/pages/index.tsx
 
 # Build the Next.js application
 RUN npm run build
 
 # Start the Next.js application
-CMD ["npm", "start"]
+CMD ["npm", "serve"]
