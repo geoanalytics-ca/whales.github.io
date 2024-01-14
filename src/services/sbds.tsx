@@ -23,14 +23,14 @@ export const getDetections = async (startDate: string, endDate: string, detectio
     return response.data.detections;
 }
 
-export const getBlobSAS = async (blobName: string, setBlobSAS: React.Dispatch<React.SetStateAction<string>> ) => {
+export const getBlobSAS = async (blobName: string ) => {
     const params = {
-        blob_name: blobName
+        'blob_name': blobName
     };
     const response = await axios.get(
         `${apiURL}/blobsas`, {
         params: params,
         headers: {'Content-Type': 'application/json'},
     });
-    setBlobSAS(response.data.blobsas);
+    return response.data.blobsas;
 }

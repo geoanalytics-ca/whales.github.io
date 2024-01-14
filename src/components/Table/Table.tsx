@@ -24,8 +24,8 @@ import {
 } from "@services/sbds";
 
 const WhaleTable = (
-    { setMapCenter, setMapMarkers } : 
-    { setMapCenter:  React.Dispatch<React.SetStateAction<number[]>>, setMapMarkers: React.Dispatch<React.SetStateAction<mapMarker[]>> }
+    { setMapCenter, setMapZoom, setMapMarkers } : 
+    { setMapCenter:  React.Dispatch<React.SetStateAction<number[]>>, setMapZoom: React.Dispatch<React.SetStateAction<number>>, setMapMarkers: React.Dispatch<React.SetStateAction<mapMarker[]>> }
     ) => {
 
     // const sbdsClient = new SBDSClient(process.env.API_URL as string);
@@ -39,8 +39,8 @@ const WhaleTable = (
     }
 
     // Track the state of the query parameters
-    const [startDate, setStartDate] = useState('2022-01-01');
-    const [endDate, setEndDate] = useState('2022-12-31');
+    const [startDate, setStartDate] = useState('2023-04-01');
+    const [endDate, setEndDate] = useState('2023-09-30');
 
     const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.value > endDate) {
@@ -59,7 +59,6 @@ const WhaleTable = (
     const [detections, setDetections] = useState<Detection[]>([]);
     const [detectionType, setDetectionType] = useState<string>(DetectionTypes['validated_definite']);
 
-    const [previewImage, setPreviewImage] = useState<string>("");
     const [detectionImage, setDetectionImage] = useState<string>("");
 
     const fetchDetections = async () => {
@@ -76,28 +75,30 @@ const WhaleTable = (
         }
     };
 
-    // useEffect(() => {
-    //     const markers: mapMarker[] = [];
-    //     detections.forEach((detection) => {
-    //         const marker: mapMarker = {
-    //             det: detection,
-    //             preview: setPreviewImage
-    //         };
-    //         markers.push(marker);
-    //     });
-    //     setMapMarkers(markers);
-    // }, [detections]);
+    useEffect(() => {
+        const markers: mapMarker[] = [];
+        detections.forEach((detection) => {
+            const marker: mapMarker = {
+                det: detection,
+                preview: setDetectionImage
+            };
+            markers.push(marker);
+        });
+        setMapMarkers(markers);
+    }, [detections]);
 
-    const updatePreview = async (
+    const handleRowClick = async (
         detection: Detection
     ) => {
-        setMapCenter([detection.centroid[0], detection.centroid[1]]);
-        setDetectionImage(detection.chipped_sat);
-        try {
-            await getBlobSAS(detectionImage, setPreviewImage);
-        } catch (error) {
-            console.error('Error fetching preview:', error);
-        }
+        console.log('Row clicked:', detection);
+        setMapCenter([detection.centroid[1], detection.centroid[0]]);
+        setMapZoom(15);
+        // try {
+        //     const detImage: string = await getBlobSAS(detection.blob_name);
+        //     setDetectionImage(detImage);
+        // } catch (error) {
+        //     console.error('Error fetching preview:', error);
+        // }
     };
 
     return (
@@ -128,25 +129,34 @@ const WhaleTable = (
                 <>
                 { (detections.length > 0 && startDate < endDate) ? (
                     Array.isArray(detections) && (
-                        <Table aria-label="Example static collection table">
+                        <Table 
+                                aria-label="Example static collection table"
+                                color={"default"}
+                                selectionMode="single" 
+                                defaultSelectedKeys={[""]} 
+                                // onRowAction={handleRowClick}
+                            >
                             <TableHeader>
                                 <TableColumn>ID</TableColumn>
-                                <TableColumn>Scene Name</TableColumn>
-                                <TableColumn>Detection Type</TableColumn>
+                                {/* <TableColumn>Scene Name</TableColumn> */}
+                                {/* <TableColumn>Detection Type</TableColumn> */}
                                 <TableColumn>Confidence</TableColumn>
                                 <TableColumn>Loc.</TableColumn>
-                                <TableColumn>Image</TableColumn>
+                                {/* <TableColumn>Image</TableColumn> */}
                             </TableHeader>
                             <TableBody>
                                 {
-                                    detections.map((detection, index) => (
-                                        <TableRow key={index} textValue={detection.chipped_sat} onClick={() => updatePreview(detection)}> 
+                                    detections.map((detection, _) => (
+                                        <TableRow key={detection.id} 
+                                                textValue={detection.chipped_sat} 
+                                                onClick={() => handleRowClick(detection)}
+                                            > 
                                             <TableCell>{detection.id}</TableCell>
-                                            <TableCell>{detection.scene_name}</TableCell>
-                                            <TableCell>{detection.detection_type}</TableCell>
-                                            <TableCell>{detection.confidence}</TableCell>
-                                            <TableCell>{detection.centroid[0]}, {detection.centroid[1]}</TableCell>
-                                            <TableCell>{detection.chipped_sat}</TableCell>
+                                            {/* <TableCell>{detection.scene_name}</TableCell> */}
+                                            {/* <TableCell>{detection.detection_type}</TableCell> */}
+                                            <TableCell>{detection.confidence.toFixed(4)}</TableCell>
+                                            <TableCell>{detection.centroid[1].toFixed(4)}, {detection.centroid[0].toFixed(4)}</TableCell>
+                                            {/* <TableCell>{detection.chipped_sat}</TableCell> */}
                                         </TableRow>
                                     ))
                                 }
@@ -173,7 +183,7 @@ const WhaleTable = (
                     (detectionImage) ? (
                         <Card>
                             <CardBody>
-                                <Image src={previewImage} />
+                                <Image src={detectionImage} />
                             </CardBody>
                         </Card>
                     ) : (

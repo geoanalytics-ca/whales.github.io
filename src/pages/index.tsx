@@ -37,7 +37,7 @@ const Stream1 = () => {
               <MapComponent className="map" center={mapCenter} zoom={mapZoom} mapData={mapData} mapMarkers={mapMarkers} >
               </MapComponent>
               <Card>
-                  <TableComponent setMapCenter={setMapCenter} setMapMarkers={setMapMarkers}>
+                  <TableComponent setMapCenter={setMapCenter} setMapZoom={setMapZoom} setMapMarkers={setMapMarkers}>
                   </TableComponent>
               </Card>
             </Layout>

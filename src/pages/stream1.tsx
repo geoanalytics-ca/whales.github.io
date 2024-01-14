@@ -31,12 +31,13 @@ const Stream1 = () => {
                 <title>DataMap</title>
                 <meta name="description" content="Create mapping apps with Next.js Leaflet Starter" />
                 <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+                <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" /> 
                 <link rel="icon" href="/favicon.ico" />
             </Head>
               <MapComponent className="map" center={mapCenter} zoom={mapZoom} mapData={mapData} mapMarkers={mapMarkers} >
               </MapComponent>
               <Card>
-                  <TableComponent setMapCenter={setMapCenter} setMapMarkers={setMapMarkers}>
+                  <TableComponent setMapCenter={setMapCenter} setMapZoom={setMapZoom} setMapMarkers={setMapMarkers}>
                   </TableComponent>
               </Card>
             </Layout>
