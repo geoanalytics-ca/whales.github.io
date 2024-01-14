@@ -75,12 +75,20 @@ const WhaleTable = (
         }
     };
 
+    const queryForBlobSAS = async (blobName: string) => {
+        try {
+            await getBlobSAS({ blobName, setDetectionImage });
+        } catch (error) {
+            console.error('Error fetching preview:', error);
+        }
+    };
+
     useEffect(() => {
         const markers: mapMarker[] = [];
         detections.forEach((detection) => {
             const marker: mapMarker = {
                 det: detection,
-                preview: setDetectionImage
+                preview: queryForBlobSAS
             };
             markers.push(marker);
         });
@@ -93,16 +101,15 @@ const WhaleTable = (
         console.log('Row clicked:', detection);
         setMapCenter([detection.centroid[1], detection.centroid[0]]);
         setMapZoom(15);
-        // try {
-        //     const detImage: string = await getBlobSAS(detection.blob_name);
-        //     setDetectionImage(detImage);
-        // } catch (error) {
-        //     console.error('Error fetching preview:', error);
-        // }
+        try {
+            await getBlobSAS({ blobName: detection.blob_name, setDetectionImage });
+        } catch (error) {
+            console.error('Error fetching preview:', error);
+        }
     };
 
     return (
-        <Card className="stream1-pane">
+        <Card className="stream1-pane overflow-y:auto">
             <CardBody className='stream1-input'>
                 <CardBody>
                     <label htmlFor="startDateTime">Start Date: </label>
@@ -164,13 +171,13 @@ const WhaleTable = (
                         </Table>
                     )
                 ) : (
-                    <Table aria-label="Example static collection table">
+                    <Table aria-label="Empty static collection table">
                     <TableHeader>
-                        <TableColumn>Loading...</TableColumn>
+                        <TableColumn>...</TableColumn>
                     </TableHeader>
                     <TableBody>
                         <TableRow>
-                            <TableCell><Spinner /></TableCell>
+                            <TableCell><GiWhaleTail /></TableCell>
                         </TableRow>
                     </TableBody>
                     </Table>
@@ -178,19 +185,16 @@ const WhaleTable = (
                 </>
             </CardBody>
             <CardBody className='stream1-preview'>
-                <>
-                {   
-                    (detectionImage) ? (
+                {detectionImage && (
+                    <>
                         <Card>
                             <CardBody>
-                                <Image src={detectionImage} />
+                                <Image className="brightness-150" src={detectionImage} />
                             </CardBody>
                         </Card>
-                    ) : (
-                        <GiWhaleTail />
-                    )
-                }
-                </>
+                    </>
+                )}
+                {!detectionImage && <GiWhaleTail />}
             </CardBody>
     </Card>
     );

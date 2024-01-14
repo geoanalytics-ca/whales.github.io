@@ -9,9 +9,7 @@ const Layout = ({ children }: React.PropsWithChildren<{ className: string }>) =>
       <Head>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className='navbar'>
       <Header />
-      </div>
       <main>{children}</main>
       <Footer />
     </div>

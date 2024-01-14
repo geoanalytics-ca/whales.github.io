@@ -34,12 +34,12 @@ const Stream1 = () => {
                 <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" /> 
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-              <MapComponent className="map" center={mapCenter} zoom={mapZoom} mapData={mapData} mapMarkers={mapMarkers} >
+              <MapComponent className="stream1-map" center={mapCenter} zoom={mapZoom} mapData={mapData} mapMarkers={mapMarkers} >
               </MapComponent>
-              <Card>
+              {/* <Card> */}
                   <TableComponent setMapCenter={setMapCenter} setMapZoom={setMapZoom} setMapMarkers={setMapMarkers}>
                   </TableComponent>
-              </Card>
+              {/* </Card> */}
             </Layout>
         </>
     )

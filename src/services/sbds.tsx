@@ -23,7 +23,9 @@ export const getDetections = async (startDate: string, endDate: string, detectio
     return response.data.detections;
 }
 
-export const getBlobSAS = async (blobName: string ) => {
+export const getBlobSAS = async (
+    {blobName, setDetectionImage} : { blobName: string, setDetectionImage: React.Dispatch<React.SetStateAction<string>>}
+    ) => {
     const params = {
         'blob_name': blobName
     };
@@ -32,5 +34,6 @@ export const getBlobSAS = async (blobName: string ) => {
         params: params,
         headers: {'Content-Type': 'application/json'},
     });
-    return response.data.blobsas;
+    console.log('response', JSON.parse(response.data.blobsas));
+    setDetectionImage(JSON.parse(response.data.blobsas));
 }
