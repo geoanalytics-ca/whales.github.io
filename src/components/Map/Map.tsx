@@ -7,15 +7,15 @@ import { Icon } from 'leaflet';
 
 const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: number[]; zoom: number; mapData: string, mapMarkers: mapMarker[]}) => {
     const { className, center, zoom, mapData, mapMarkers } = props;
-    const [tileJson, setTileJson] = useState<any>(null);
+    const [tileJson, setTileJson] = useState<any>([]);
 
     useEffect(() => {
         const fetchTileJson = async () => {
-            const response = await fetch(`https://titiler.xyz/cog/tilejson.json?url=${mapData}`);
-            const data = await response.json();
-            setTileJson(data);
-            console.log('TileJSON:', data);
-        }
+            // await fetch(`https://titiler.xyz/cog/tilejson.json?url=${mapData}`).then((response) => {
+            await fetch("https://titiler.xyz/cog/tilejson.json?url=https://opendata.digitalglobe.com/events/mauritius-oil-spill/post-event/2020-08-12/105001001F1B5B00/105001001F1B5B00.tif").then((response) => {
+                setTileJson(response.json());
+            });
+        };
         fetchTileJson();
     }, [mapData]);
     
@@ -30,27 +30,9 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
         return null;
     }
 
-    const Tiles = (
-        {tileJson} : {tileJson: any}
-        ) => {
-        return (
-            (tileJson !== null && tileJson.tiles) ? (
-            <ReactLeaflet.TileLayer
-                url={tileJson.tiles[0]}
-                tileSize={512}
-                minZoom={2}
-                crossOrigin={false}
-            />
-            ) : (
-                <></>
-            )
-        )
-    };
-
     return (
         <ReactLeaflet.MapContainer className={className} center={[center[0], center[1]]} zoom={zoom} >
-            < Tiles tileJson={tileJson} />
-            <>{
+            {
                 (mapMarkers && mapMarkers.length > 0 && (
                     mapMarkers.map((marker: mapMarker) => (
                         <ReactLeaflet.Marker
@@ -78,12 +60,21 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
                         </ReactLeaflet.Marker>
                     )
                 )))
-            }</>
+            }
 
             <ReactLeaflet.TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution="&copy; OpenStreetMap contributors"
             />
+            {(tileJson && tileJson.tiles && (
+                <ReactLeaflet.TileLayer
+                    url={tileJson.tiles[0]}
+                    tileSize={512}
+                    minZoom={2}
+                    crossOrigin={false}
+                />
+            ))
+            }
             <RecenterAutomatically />
         </ReactLeaflet.MapContainer>
     )

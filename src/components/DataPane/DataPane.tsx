@@ -1,40 +1,58 @@
 import { fetchCatalog, fetchCollection, fetchItems, fetchItem } from '@services/stac';
 import React, { useState, useEffect, use } from 'react';
-import { Catalog, Collection, Asset, STACLink } from '@stac/StacObjects';
+import { Catalog, Collection, Item, Asset, STACLink } from '@stac/StacObjects';
 import { FaImage, FaMap } from "react-icons/fa";
+import { GiWhaleTail } from "react-icons/gi";
 import { 
     Card,
     CardBody,
     Spinner,
     Checkbox,
-    Divider,
+    Table,
+    TableHeader,
+    TableColumn,
+    TableRow,
+    TableBody,
+    TableCell,
     Modal,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalContent,
+    useDisclosure,
+    Button,
+    Image,
 } from "@nextui-org/react";
+
+type assetLink = {
+    assetName: string;
+    href: string;
+    parent: string;
+};
 
 const DataPane = (
     { 
-        mapCenter, setMapCenter, mapZoom, setMapData,
-        catalog, setCatalog, collections, setCollections, itemLinks, setItemLinks,
+        mapCenter, setMapCenter, mapZoom, setMapData
     } : { 
-        mapCenter: number[], setMapCenter: React.Dispatch<React.SetStateAction<number[]>>, mapZoom: number, setMapData: React.Dispatch<React.SetStateAction<string>>,
-        catalog: Catalog | undefined, setCatalog: React.Dispatch<React.SetStateAction<Catalog | undefined>>, collections: Collection[], setCollections: React.Dispatch<React.SetStateAction<Collection[]>>, itemLinks: STACLink[], setItemLinks: React.Dispatch<React.SetStateAction<STACLink[]>>,
+        mapCenter: number[], setMapCenter: React.Dispatch<React.SetStateAction<number[]>>, mapZoom: number, setMapData: React.Dispatch<React.SetStateAction<string>>
     }
     ) => {
+
+    const [catalog, setCatalog] = useState<Catalog>(); 
+    const [collections, setCollections] = useState<Collection[]>([]);     
+    const [itemLinks, setItemLinks] = useState<STACLink[]>([]);
+    const [assetLinks, setAssetLinks] = useState<assetLink[]>([]);
     
     // Track the state of the query parameters
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     
-    // Track the state of the collections and items
-    const [showItemsResults, setShowItemsResults] = useState<STACLink[]>([]); // Track the query results
-    const [clickedItem, setClickedItem] = useState<string>(''); // Track the clicked item
-    
     // Track which Item's should be rendered
-    const [selectedCollections, setSelectedCollections] = useState<Collection[]>([]); // Track selected collections
+    const [selectedCollections, setSelectedCollections] = useState<STACLink[]>([]); // Track selected collections
 
     // PNG Modal
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isSelected, setIsSelected] = useState(false);
+    const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
+    const [previewLink, setPreviewLink] = useState<string>('');
         
     const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.value > endDate) {
@@ -51,104 +69,76 @@ const DataPane = (
     };
 
     const handleCollectionChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedCollection = selectedCollections.find((collection) => collection.id === event.target.name);
-        const collection: Collection | undefined = collections.find((collection) => collection.id === event.target.name);
-        let newCollection: boolean = false;
-        let collectionItems: STACLink[] = [];
-        (event.target.checked &&
-            !selectedCollection && collection) && (
-                selectedCollections.push(collection),
-                newCollection = true,
-                console.log('Checked:', event.target.name)
-        );
-
-        (!event.target.checked &&
-            selectedCollection && collection) && (
-                selectedCollections.splice(selectedCollections.indexOf(collection), 1),
-                console.log('Unchecked:', event.target.name),
-                (itemLinks.length > 0) && (
-                    itemLinks.forEach((itemLink) => {
-                        (itemLink.parent === collection.id) && (
-                            itemLinks.splice(itemLinks.indexOf(itemLink), 1)
-                        );
-                    }
-                ))
-            );
-
-        (newCollection && collection && startDate < endDate) && (
-            collectionItems = await fetchItems(collection, startDate, endDate),
-            collectionItems.forEach((itemLink) => {
-                itemLink.parent = collection.id;
-                itemLinks.push(itemLink);
-            }),
-            setShowItemsResults(collectionItems)
-        );
-            
-        console.log('Selected Collections:', selectedCollections);
-
+        const collectionId = event.target.name;
+        console.log('Collection ID:', collectionId);
+        if (catalog === undefined) {
+            return;
+        }
+        const collection = catalog.links.find((c) => c.title === collectionId);
+        console.log('Collection:', collection);
+        if (event.target.checked && collection !== undefined) {
+            const isAlreadySelected = selectedCollections.some((c) => c === collection);
+            if (!isAlreadySelected) {
+                selectedCollections.push(collection);
+            } else if (!event.target.checked && collection !== undefined && selectedCollections.length > 0) {
+                setSelectedCollections((prevSelectedCollections) => prevSelectedCollections.filter((c) => c !== collection));
+            }
+        };
+        if (!event.target.checked && collection !== undefined && selectedCollections.length > 0) {
+            setSelectedCollections((prevSelectedCollections) => prevSelectedCollections.filter((c) => c !== collection));
+        }
     };
 
-    const handleItemSelection = () => {
-        (clickedItem && (
-            console.log('Clicked Item:', clickedItem)
-        ));
-        const itemLink = itemLinks.find((itemLink) => itemLink.title === clickedItem);
-        itemLink && fetchItem(itemLink.href).then((item) => {
-            console.log('Item:', item);
-            item.assets && Object.keys(item.assets).map((key) => {
-                const asset = item.assets[key];
-                if (
-                    key !== 'reference' &&
-                    key !== 'data' &&
-                    key !== 'netcdf' &&
-                    key !== 'image' &&
-                    !asset.title.includes('flags')
-                ) {
-                    console.log('Asset:', asset);
-                    setMapData(asset.href);
-                }
+    const queryForItems = async (colls: STACLink[]) => {
+        console.log('Querying for items');
+        console.log('Selected Collections:', colls);
+
+        const queriedItems: STACLink[] = [];
+
+        if (startDate < endDate && colls.length > 0) {
+            colls.forEach((collection) => {
+                console.log('Collection:', collection);
+                fetchCollection(collection.href).then((collection) => {
+                    fetchItems(collection, startDate, endDate).then((items) => {
+                        items.forEach((item: STACLink) => {
+                            const existingItem = queriedItems.find((i) => i.title === item.title);
+                            if (!existingItem) {
+                                queriedItems.push(item);
+                            }
+                        });
+                        setItemLinks(queriedItems);
+                    });
+                });
             });
-        });
+        }
     };
 
-    // https://acri.blob.core.windows.net/acri/ACRI/ATLNW/merged/day/2022/04/17/L3m_20220417__ATLNW_1_AV-MOD_NRRS469_DAY_00.NRRS469_mean.tif
+    const getItemAssetLinks = async (itemHref: string) => {
+        console.log('Fetching item assets');
+        console.log('Item HREF:', itemHref);
 
-    useEffect(() => {
-        handleItemSelection();
-    }, [clickedItem]);
+        const _assetLinks: assetLink[] = [];
 
-    const ItemPane = (
-        { itemLinks, selectedCollections, handleItemSelection } : { itemLinks: STACLink[], selectedCollections: Collection[], handleItemSelection: (event: React.ChangeEvent<HTMLInputElement>) => void }
-    ) => {
-
-        useEffect(() => {
-            console.log('Item Links:', itemLinks);
-        }, [itemLinks]);
-
-        return (
-                <CardBody>
-                        <div className="flex h-10 items-center space-x-4 text-small">
-                            Map
-                            <Divider orientation="vertical" />
-                            PNG
-                            <Divider orientation="vertical" />
-                            Item
-                        </div>
-                        <Divider />
-                        <>
-                        {(itemLinks.length > 0 && selectedCollections.length > 0) && (
-                            showItemsResults.map((itemLink) =>
-                                    <div key={itemLink.title} className="flex items-center space-x-4 text-small">
-                                        <FaMap key={itemLink.title} onClick={() => setClickedItem(itemLink.title)} />
-                                        <Divider orientation="vertical" />
-                                        <FaImage onClick={() => setIsModalOpen(true)} />
-                                        <Divider orientation="vertical" />
-                                        {itemLink.title}
-                                    </div>
-                            ))}
-                        </>
-                </CardBody>
-        );
+        const item = await fetchItem(itemHref).then((item) => {
+            for (const [key, value] of Object.entries(item.assets)) {
+                const _asset = value as Asset;
+                console.log(`${key}: ${value}`);
+                if (
+                    key === 'data' ||
+                    key === 'netcdf' ||
+                    key === 'reference'
+                ) {
+                    continue;
+                }
+                const asset = {
+                    assetName: key as string,
+                    parent: item.title as string,
+                    href: _asset.href as string,
+                };
+                _assetLinks.push(asset);
+            }
+            setAssetLinks(_assetLinks);
+        });
     };
 
     useEffect(() => {
@@ -162,69 +152,182 @@ const DataPane = (
     }, []);
 
     const CollectionPane = (
-        { catalog, collections, setCollections } : { catalog: Catalog | undefined, collections: Collection[], setCollections: React.Dispatch<React.SetStateAction<Collection[]>> }
+        { catalog } : { catalog: Catalog | undefined }
     ) => {
-        
-        if (catalog && catalog.links && collections.length === 0) {
-            catalog.links.filter((link) => link.rel === 'child').forEach(async (link) => {
-                const collection = await fetchCollection(link.href).then((collection) => {
-                    setCollections(collections => [...collections, collection]);
-                    return collection;
-                }
-                );
-                console.log('Collection:', collection);
-            });
-        }
-
         return (
+            <Card className="collection-pane">
                 <CardBody>
-                    <>{
+                    Collections: 
+                    <div className="flex">
+                    {
                         (catalog && catalog.links) ? (
                             catalog.links.filter((link) => link.rel === 'child').map((link) =>
-                                <Checkbox key={link.title} name={link.title} defaultSelected={false} onChange={handleCollectionChange}>
+                                <Checkbox className="flex-1" key={link.title} name={link.title} defaultSelected={false} onChange={handleCollectionChange}>
                                     {link.title}
                                 </Checkbox>
                             )
                         ) : (
                             <Spinner />
                         )
-                    }</>
+                    }
+                    </div>
                 </CardBody>
+            </Card>
         );
     };
 
-    const renderImage = (itemLink: STACLink) => {
-        fetchItem(itemLink.href).then((item) => {
-            console.log('Item:', item);
-            setMapData(item.links.filter((link: any) => link.rel === 'data')[0].href);
-        });
+    const showPreview = async (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+        const itemHref = event.currentTarget.getAttribute('name');
+        (itemHref) ? (
+            setPreviewLink(itemHref),
+            onOpen()
+            ) : (
+                console.log('No item href')
+            )
+    };
+
+    const renderOnMap = async (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+        console.log('Render on Map');
+        const itemHref = event.currentTarget.getAttribute('name');
+        (itemHref) ? (
+            setMapData(itemHref)
+        ) : (
+            console.log('No item href')
+        )
     }
+
+    useEffect(() => {
+        console.log('Item Links:', itemLinks);
+    }, [itemLinks]);
+
+    useEffect(() => {
+        console.log('Asset Links:', assetLinks);
+    }, [assetLinks]);
 
     return (
         <Card className='datapane'>
+            <Modal className="z-2" size={"4xl"} isOpen={isOpen} onOpenChange={onOpenChange} onClose={onClose}>
+                <ModalContent>
+                    <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
+                    <ModalBody>
+                        <Image src={previewLink} />
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="danger" variant="light" onPress={onClose}>
+                        Close
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
             <CardBody>
-                <div>
-                    <Card className="date-box">
+                <div className="flex space-x-4">
+                    <Card className="flex-1">
                         <CardBody>
                             <label htmlFor="startDateTime">Start Date: </label>
                             <input type="date" id="startDateTime" value={startDate} onChange={handleStartDateChange} />
-                            <br />
+                        </CardBody>
+                    </Card>
+                    <Card className="flex-1 w-full">
+                        <CardBody>
                             <label htmlFor="endDateTime">End Date: </label>
                             <input type="date" id="endDateTime" value={endDate} onChange={handleEndDateChange} />
-                    </CardBody>
+                        </CardBody>
+                    </Card>
+                </div>
+                <div className="flex">
+                    < CollectionPane catalog={catalog} />
+                </div>
+                <div className="flex w-full">
+                    <Button className="flex-1" onClick={() => queryForItems(selectedCollections)}>Search</Button>
+                </div>
+                <div className="flex">
+                    <Card className="flex-1">
+                        <CardBody>
+                        {(itemLinks.length > 0) ? (
+                            console.log('Rendering items'),
+                            <Table 
+                                aria-label="Example static collection table"
+                                color={"default"}
+                                selectionMode='single'
+                                defaultSelectedKeys={[]}
+                                isHeaderSticky={true}
+                                classNames={{
+                                    base: "max-h-[400px] overflow-scroll",
+                                    table: "min-h-[425px]",
+                                }}
+                            >
+                                <TableHeader>
+                                    <TableColumn>Item</TableColumn>
+                                </TableHeader>
+                                <TableBody>
+                                    {
+                                        itemLinks.map((item: STACLink) => (
+                                        <TableRow key={item.title} onClick={() => getItemAssetLinks(item.href)} >
+                                            <TableCell>{item.title}</TableCell>
+                                        </TableRow>
+                                        ))
+                                    }
+                                </TableBody>
+                            </Table>
+                            ) : (
+                            console.log('No items to display'),
+                            <div className="flex justify-center">
+                                <GiWhaleTail size={50} />
+                            </div>
+                        )}   
+                </CardBody>
                 </Card>
                 </div>
                 <div>
-                    <Card className='collection-pane'>
-                        Collections:
-                        < CollectionPane catalog={catalog} collections={collections} setCollections={setCollections} />
-                    </Card>
-                </div>
-                <div>
-                    <Card className='item-pane'>
-                        Items:
-                        < ItemPane itemLinks={itemLinks} selectedCollections={selectedCollections} handleItemSelection={handleItemSelection} />
-                    </Card>
+                <Card className="flex">
+                    <CardBody>
+                        {(assetLinks.length > 0) ? (
+                            console.log('Rendering assets'),
+                            <Table 
+                            aria-label="Example static collection table"
+                            color={"default"}
+                            selectionMode='single'
+                            defaultSelectedKeys={[]}
+                            isHeaderSticky={true}
+                            classNames={{
+                                base: "max-h-[150px] overflow-scroll",
+                                table: "min-h-[100px]",
+                            }}
+                            >
+                                <TableHeader>
+                                    <TableColumn>Asset</TableColumn>
+                                    <TableColumn>Item</TableColumn>
+                                    <TableColumn>Data</TableColumn>
+                                </TableHeader>
+                                <TableBody>
+                                    {
+                                        (assetLinks.length > 0 &&
+                                            assetLinks.map((asset: assetLink) => (
+                                            <TableRow key={asset.assetName}>
+                                                <TableCell>{asset.assetName}</TableCell>
+                                                <TableCell>{asset.parent}</TableCell>
+                                                {(asset.assetName === 'image') ? (
+                                                <TableCell>
+                                                    <FaImage name={asset.href} size={20} onClick={showPreview} />
+                                                </TableCell>
+                                                ) : (
+                                                <TableCell>
+                                                    <FaMap name={asset.href} size={20} onClick={renderOnMap} />
+                                                </TableCell>
+                                                )}
+                                            </TableRow>
+                                        ))) || <></>
+                                    }
+                                </TableBody>
+                            </Table>
+                            ) : (
+                            console.log('No assets to display'),
+                            <div className="flex justify-center">
+                                <FaImage size={10} />
+                            </div>
+                            )}
+                    </CardBody>
+                </Card>
                 </div>
             </CardBody>
         </Card>

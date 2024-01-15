@@ -33,12 +33,12 @@ body {
   height: 100%;
 }
 
-.map {
+.stream2-map {
   position: fixed;
   top: 40px;
   bottom: 40px;
   left: 0%;
-  width: 70%;
+  width: 55%;
   height: 100%;
   z-index: 0;
 }
@@ -174,7 +174,7 @@ body {
   justify-content: left;
   overflow: auto;
   margin: 10px;
-  height: 10%;
+  height: 80%;
   width: 100%;
 }
 
@@ -186,13 +186,13 @@ body {
 
 .datapane {
   position: fixed;
-  top: 70px;
+  top: 40px;
   bottom: 40px;
   right: 0;
-  width: 35%;
+  width: 45%;
   min-width: 250px;
-  height: calc(100% - 70px - 40px);
+  height: calc(100% - 40px - 20px);
   /* background: rgba(9, 9, 9, 0.75); */
-  z-index: 1000;
+  z-index: 1;
   /* border: 1px solid red; */
 }

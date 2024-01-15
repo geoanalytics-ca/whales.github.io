@@ -36,10 +36,10 @@
 // module.exports = nextConfig
 
 module.exports = {
-  basePath: '/whalemap',
-  assetPrefix: 'https://smartwhales-dev.geoanalytics.ca/whalemap/',
-  images: {
-    loader: 'imgix',
-    path: '',
-  },
+  // basePath: '/whalemap',
+  // assetPrefix: 'https://smartwhales-dev.geoanalytics.ca/whalemap/',
+  // images: {
+  //   loader: 'imgix',
+  //   path: '',
+  // },
 }

@@ -1,6 +1,5 @@
 {
   "name": "whales-webmap",
-  "homepage": "https://smartwhales-dev.geoanalytics.ca/whalemap",
   "version": "0.0.1",
   "private": true,
   "scripts": {
