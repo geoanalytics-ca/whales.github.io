@@ -100,7 +100,7 @@ const WhaleTable = (
     ) => {
         console.log('Row clicked:', detection);
         setMapCenter([detection.centroid[1], detection.centroid[0]]);
-        setMapZoom(15);
+        setMapZoom(12);
         try {
             await getBlobSAS({ blobName: detection.blob_name, setDetectionImage });
         } catch (error) {
@@ -109,93 +109,117 @@ const WhaleTable = (
     };
 
     return (
-        <Card className="stream1-pane overflow-y:auto">
-            <CardBody className='stream1-input'>
-                <CardBody>
-                    <label htmlFor="startDateTime">Start Date: </label>
-                    <input type="date" id="startDateTime" value={startDate} onChange={handleStartDateChange} />
-                    <br />
-                    <label htmlFor="endDateTime">End Date: </label>
-                    <input type="date" id="endDateTime" value={endDate} onChange={handleEndDateChange} />
-                </CardBody>
-                <CardBody>
-                <>
-                    <label htmlFor="detectionType">Detection Type:</label>
-                    <select id="detectionType" defaultValue={detectionType} onChange={(e) => setDetectionType(e.target.value)} >
-                        {Object.values(DetectionTypes).map((type, index) => (
-                            <option key={index} value={type}>{type}</option>
-                        ))}
-                    </select>
-                </>
-                </CardBody>
-                <CardBody>
-                    <Button onClick={fetchDetections}>Fetch Detections</Button>
-                </CardBody>
-            </CardBody>
-            <CardBody className='stream1-table'>
-                <>
-                { (detections.length > 0 && startDate < endDate) ? (
-                    Array.isArray(detections) && (
-                        <Table 
-                                aria-label="Example static collection table"
-                                color={"default"}
-                                selectionMode="single" 
-                                defaultSelectedKeys={[""]} 
-                                // onRowAction={handleRowClick}
-                            >
-                            <TableHeader>
-                                <TableColumn>ID</TableColumn>
-                                {/* <TableColumn>Scene Name</TableColumn> */}
-                                {/* <TableColumn>Detection Type</TableColumn> */}
-                                <TableColumn>Confidence</TableColumn>
-                                <TableColumn>Loc.</TableColumn>
-                                {/* <TableColumn>Image</TableColumn> */}
-                            </TableHeader>
-                            <TableBody>
-                                {
-                                    detections.map((detection, _) => (
-                                        <TableRow key={detection.id} 
-                                                textValue={detection.chipped_sat} 
-                                                onClick={() => handleRowClick(detection)}
-                                            > 
-                                            <TableCell>{detection.id}</TableCell>
-                                            {/* <TableCell>{detection.scene_name}</TableCell> */}
-                                            {/* <TableCell>{detection.detection_type}</TableCell> */}
-                                            <TableCell>{detection.confidence.toFixed(4)}</TableCell>
-                                            <TableCell>{detection.centroid[1].toFixed(4)}, {detection.centroid[0].toFixed(4)}</TableCell>
-                                            {/* <TableCell>{detection.chipped_sat}</TableCell> */}
-                                        </TableRow>
-                                    ))
-                                }
-                            </TableBody>
-                        </Table>
-                    )
-                ) : (
-                    <Table aria-label="Empty static collection table">
-                    <TableHeader>
-                        <TableColumn>...</TableColumn>
-                    </TableHeader>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell><GiWhaleTail /></TableCell>
-                        </TableRow>
-                    </TableBody>
-                    </Table>
-                )}  
-                </>
-            </CardBody>
-            <CardBody className='stream1-preview'>
-                {detectionImage && (
-                    <>
-                        <Card>
+        <Card className="stream1-pane">
+            <CardBody>
+                <div className="height:35%">
+                    <Card className='width:100%'>
+                        <div className="flex w-full">
+                            <Card className='flex-1 space-x-1'>
+                                <CardBody>
+                                    <label htmlFor="startDateTime">Start Date: </label>
+                                    <input type="date" id="startDateTime" value={startDate} onChange={handleStartDateChange} />
+                                </CardBody>
+                            </Card>
+                            <Card className='flex-1 space-x-1'>
+                                <CardBody>
+                                    <label htmlFor="endDateTime">End Date: </label>
+                                    <input type="date" id="endDateTime" value={endDate} onChange={handleEndDateChange} />
+                                </CardBody>
+                            </Card>
+                        </div>
+                        <Card className='w-full'>
                             <CardBody>
-                                <Image className="brightness-150" src={detectionImage} />
+                                <>
+                                    <label htmlFor="detectionType">Detection Type:</label>
+                                    <select id="detectionType" defaultValue={detectionType} onChange={(e) => setDetectionType(e.target.value)} >
+                                        {Object.values(DetectionTypes).map((type, index) => (
+                                            <option key={index} value={type}>{type}</option>
+                                        ))}
+                                    </select>
+                                </>
                             </CardBody>
                         </Card>
-                    </>
-                )}
-                {!detectionImage && <GiWhaleTail />}
-            </CardBody>
+                        <Card className='w-full'>
+                            <CardBody>
+                                <Button onClick={fetchDetections}>Fetch Detections</Button>
+                            </CardBody>
+                        </Card>
+                    </Card>
+                </div>
+                <div className="height:65%">
+                    <Card className=' w-full'>
+                        <div className='flex'>
+                            <Card className='flex-1'>
+                                <CardBody>
+                                <>
+                                { (detections.length > 0 && startDate < endDate) ? (
+                                    Array.isArray(detections) && (
+                                        <Table 
+                                                aria-label="Example static collection table"
+                                                color={"default"}
+                                                isHeaderSticky={true}
+                                                selectionMode="single" 
+                                                defaultSelectedKeys={[""]} 
+                                                classNames={{
+                                                    base: "max-h-[400px] overflow-scroll",
+                                                    table: "min-h-[320px]",
+                                                  }}
+                                                // onRowAction={handleRowClick}
+                                            >
+                                            <TableHeader>
+                                                <TableColumn>ID</TableColumn>
+                                                {/* <TableColumn>Scene Name</TableColumn> */}
+                                                {/* <TableColumn>Detection Type</TableColumn> */}
+                                                <TableColumn>Confidence</TableColumn>
+                                                <TableColumn>Loc.</TableColumn>
+                                                {/* <TableColumn>Image</TableColumn> */}
+                                            </TableHeader>
+                                            <TableBody>
+                                                {
+                                                    detections.map((detection, _) => (
+                                                        <TableRow key={detection.id} 
+                                                                textValue={detection.chipped_sat} 
+                                                                onClick={() => handleRowClick(detection)}
+                                                            > 
+                                                            <TableCell>{detection.id}</TableCell>
+                                                            {/* <TableCell>{detection.scene_name}</TableCell> */}
+                                                            {/* <TableCell>{detection.detection_type}</TableCell> */}
+                                                            <TableCell>{detection.confidence.toFixed(4)}</TableCell>
+                                                            <TableCell>{detection.centroid[1].toFixed(4)}, {detection.centroid[0].toFixed(4)}</TableCell>
+                                                            {/* <TableCell>{detection.chipped_sat}</TableCell> */}
+                                                        </TableRow>
+                                                    ))
+                                                }
+                                            </TableBody>
+                                        </Table>
+                                    )
+                                ) : (
+                                    <Table aria-label="Empty static collection table">
+                                    <TableHeader>
+                                        <TableColumn>...</TableColumn>
+                                    </TableHeader>
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableCell><GiWhaleTail /></TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                    </Table>
+                                )}  
+                                </>
+                            </CardBody>
+                        </Card>
+                        <Card className='flex-1'>
+                            <CardBody>
+                                {detectionImage && (
+                                    <Image className="brightness-150 height-30" src={detectionImage} />
+                                )}
+                                {!detectionImage && <GiWhaleTail />}
+                            </CardBody>
+                        </Card>
+                    </div>
+                </Card>
+            </div>
+        </CardBody>
     </Card>
     );
 };
