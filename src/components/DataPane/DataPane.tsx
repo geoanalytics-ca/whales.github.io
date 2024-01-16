@@ -7,7 +7,8 @@ import {
     Card,
     CardBody,
     Spinner,
-    Checkbox,
+    RadioGroup,
+    Radio,
     Table,
     TableHeader,
     TableColumn,
@@ -38,6 +39,8 @@ const DataPane = (
     }
     ) => {
 
+    const [selected, setSelected] = React.useState("");
+
     const [catalog, setCatalog] = useState<Catalog>(); 
     const [collections, setCollections] = useState<Collection[]>([]);     
     const [itemLinks, setItemLinks] = useState<STACLink[]>([]);
@@ -48,7 +51,7 @@ const DataPane = (
     const [endDate, setEndDate] = useState('');
     
     // Track which Item's should be rendered
-    const [selectedCollections, setSelectedCollections] = useState<STACLink[]>([]); // Track selected collections
+    const [selectedCollection, setSelectedCollection] = useState<STACLink>(); // Track selected collections
 
     // PNG Modal
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
@@ -68,46 +71,59 @@ const DataPane = (
         setEndDate(event.target.value);
     };
 
-    const handleCollectionChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const collectionId = event.target.name;
+    const handleCollectionChange = async (collectionId: string) => { //async (event: React.ChangeEvent<HTMLInputElement>) => {
+        // const collectionId = event.target.name;
         console.log('Collection ID:', collectionId);
         if (catalog === undefined) {
             return;
         }
         const collection = catalog.links.find((c) => c.title === collectionId);
         console.log('Collection:', collection);
-        if (event.target.checked && collection !== undefined) {
-            const isAlreadySelected = selectedCollections.some((c) => c === collection);
+        if (collection !== undefined) {
+            const isAlreadySelected = selectedCollection === collection;
             if (!isAlreadySelected) {
-                selectedCollections.push(collection);
-            } else if (!event.target.checked && collection !== undefined && selectedCollections.length > 0) {
-                setSelectedCollections((prevSelectedCollections) => prevSelectedCollections.filter((c) => c !== collection));
+                setSelectedCollection(collection);
+            } else if (collection !== undefined && selectedCollection !== undefined) {
+                setSelectedCollection(undefined);
             }
-        };
-        if (!event.target.checked && collection !== undefined && selectedCollections.length > 0) {
-            setSelectedCollections((prevSelectedCollections) => prevSelectedCollections.filter((c) => c !== collection));
         }
+        //     const isAlreadySelected = selectedCollections.some((c) => c === collection);
+        //     if (!isAlreadySelected) {
+        //         setSelectedCollections((prevSelectedCollections) => prevSelectedCollections.concat(collection));
+        //     } else if (collection !== undefined && selectedCollections.length > 0) {
+        //         setSelectedCollections((prevSelectedCollections) => prevSelectedCollections.filter((c) => c !== collection));
+        //     }
+        // }
+        // if (collection !== undefined) {
+        //     const isAlreadySelected = selectedCollections.some((c) => c === collection);
+        //     if (!isAlreadySelected) {
+        //         selectedCollections.push(collection);
+        //     } else if (collection !== undefined && selectedCollections.length > 0) {
+        //         setSelectedCollections((prevSelectedCollections) => prevSelectedCollections.filter((c) => c !== collection));
+        //     }
+        // };
+        // if (collection !== undefined && selectedCollections.length > 0) {
+        //     setSelectedCollections((prevSelectedCollections) => prevSelectedCollections.filter((c) => c !== collection));
+        // }
     };
 
-    const queryForItems = async (colls: STACLink[]) => {
+    const queryForItems = async () => {
         console.log('Querying for items');
-        console.log('Selected Collections:', colls);
+        console.log('Selected Collections:', selectedCollection);
 
         const queriedItems: STACLink[] = [];
 
-        if (startDate < endDate && colls.length > 0) {
-            colls.forEach((collection) => {
-                console.log('Collection:', collection);
-                fetchCollection(collection.href).then((collection) => {
-                    fetchItems(collection, startDate, endDate).then((items) => {
-                        items.forEach((item: STACLink) => {
-                            const existingItem = queriedItems.find((i) => i.title === item.title);
-                            if (!existingItem) {
-                                queriedItems.push(item);
-                            }
-                        });
-                        setItemLinks(queriedItems);
+        if (startDate < endDate && selectedCollection !== undefined) {
+            console.log('Collection:', selectedCollection);
+            fetchCollection(selectedCollection.href).then((collection) => {
+                fetchItems(collection, startDate, endDate).then((items) => {
+                    items.forEach((item: STACLink) => {
+                        const existingItem = queriedItems.find((i) => i.title === item.title);
+                        if (!existingItem) {
+                            queriedItems.push(item);
+                        }
                     });
+                    setItemLinks(queriedItems);
                 });
             });
         }
@@ -123,12 +139,14 @@ const DataPane = (
             for (const [key, value] of Object.entries(item.assets)) {
                 const _asset = value as Asset;
                 console.log(`${key}: ${value}`);
-                if (
-                    key === 'data' ||
-                    key === 'netcdf' ||
-                    key === 'reference'
-                ) {
-                    continue;
+                if (selectedCollection?.title === 'acri') {
+                    if (
+                        key === 'data' ||
+                        key === 'netcdf' ||
+                        key === 'reference'
+                    ) {
+                        continue;
+                    }
                 }
                 const asset = {
                     assetName: key as string,
@@ -151,6 +169,10 @@ const DataPane = (
         console.log('Catalog:', catalog);
     }, []);
 
+    useEffect(() => {
+        handleCollectionChange(selected);
+    }, [selected]);
+
     const CollectionPane = (
         { catalog } : { catalog: Catalog | undefined }
     ) => {
@@ -158,18 +180,23 @@ const DataPane = (
             <Card className="collection-pane">
                 <CardBody>
                     Collections: 
-                    <div className="flex">
-                    {
+                    <div className="flex w-full">
+                        <RadioGroup
+                        value={selected}
+                        onValueChange={setSelected}
+                        >
+                        {
                         (catalog && catalog.links) ? (
                             catalog.links.filter((link) => link.rel === 'child').map((link) =>
-                                <Checkbox className="flex-1" key={link.title} name={link.title} defaultSelected={false} onChange={handleCollectionChange}>
+                                <Radio className="flex-1" key={link.title} value={link.title}>
                                     {link.title}
-                                </Checkbox>
+                                </Radio>
                             )
                         ) : (
-                            <Spinner />
+                            <></>
                         )
-                    }
+                        }
+                        </RadioGroup>
                     </div>
                 </CardBody>
             </Card>
@@ -206,7 +233,7 @@ const DataPane = (
 
     return (
         <Card className='datapane'>
-            <Modal className="z-2" size={"4xl"} isOpen={isOpen} onOpenChange={onOpenChange} onClose={onClose}>
+            <Modal className="z-2" size={"3xl"} isOpen={isOpen} onOpenChange={onOpenChange} onClose={onClose}>
                 <ModalContent>
                     <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
                     <ModalBody>
@@ -238,7 +265,7 @@ const DataPane = (
                     < CollectionPane catalog={catalog} />
                 </div>
                 <div className="flex w-full">
-                    <Button className="flex-1" onClick={() => queryForItems(selectedCollections)}>Search</Button>
+                    <Button className="flex-1" onClick={queryForItems}>Search</Button>
                 </div>
                 <div className="flex">
                     <Card className="flex-1">
@@ -306,7 +333,7 @@ const DataPane = (
                                             <TableRow key={asset.assetName}>
                                                 <TableCell>{asset.assetName}</TableCell>
                                                 <TableCell>{asset.parent}</TableCell>
-                                                {(asset.assetName === 'image') ? (
+                                                {(asset.assetName === 'image' || asset.assetName == 'preview') ? (
                                                 <TableCell>
                                                     <FaImage name={asset.href} size={20} onClick={showPreview} />
                                                 </TableCell>

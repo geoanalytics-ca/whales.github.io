@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { Collection, Item } from '@stac/StacObjects'; 
-import { fetchItemRefACRI } from '@services/acri';
-import { start } from 'repl';
+import { 
+    fetchItemRefACRI,
+    fetchItemRefSuitableHabitat,
+ } from '@services/acri';
 
 const API_BASE_URL = 'https://acri.blob.core.windows.net/acri/stac'; // Replace with your STAC API base URL
 
@@ -47,14 +49,15 @@ export const fetchItems = async (collection: Collection, startDateTime: string, 
         searchDates.push(currentDate.toISOString().split('T')[0]);
         currentDate.setDate(currentDate.getDate() + 1);
     }
+    console.log('searchDates', searchDates);
 
     switch (collection.id) {
         case 'acri':
             console.log('Fetching ACRI items')
-            return await fetchItemRefACRI(collection, searchDates);
-        case 'arctus':
-            console.log('Fetching Arctus items')
-            return filteredItems;
+            return fetchItemRefACRI(collection, searchDates);
+        case 'Suitablehabitat':
+            console.log('Fetching suitablehabitat items')
+            return fetchItemRefSuitableHabitat(collection, searchDates);
         case 'fronts':
             console.log('Fetching Fronts items')
             return filteredItems;

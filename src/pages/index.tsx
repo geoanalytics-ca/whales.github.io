@@ -27,7 +27,7 @@ const DataComponent = dynamic(() => {
 
 const Stream2 = () => {
   const [mapCenter, setMapCenter] = useState<number[]>([47.733359, -62.465233]);
-  const [mapZoom, setMapZoom] = useState<number>(8);
+  const [mapZoom, setMapZoom] = useState<number>(6);
   const [mapData, setMapData] = useState<string>('');
 
   console.log('Starting up Stream 2 UI')
