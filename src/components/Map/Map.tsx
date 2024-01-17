@@ -1,80 +1,65 @@
 import { LatLngExpression} from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import * as ReactLeaflet from 'react-leaflet';
-import React, { JSX, useEffect, useState } from 'react';
+import React, { JSX, use, useEffect, useState } from 'react';
 import { mapMarker } from '../../types/map';
 import { Icon } from 'leaflet';
 
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
-const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: number[]; zoom: number; mapData: string, mapMarkers: mapMarker[]}) => {
+const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: number[]; zoom: number; mapData: string|undefined, mapMarkers: mapMarker[] }) => {
     const { className, center, zoom, mapData, mapMarkers } = props;
-    const [tileJson, setTileJson] = useState<any>([]);
+    const [tileJson, setTileJson] = useState<any>(null);
+    const [titilerResponse, setTitilerResponse] = useState<AxiosResponse<any, any>>();
 
-    // useEffect(() => {
-    //     const fetchTileJson = async () => {
-    //         // await fetch(`https://titiler.xyz/cog/tilejson.json?url=${mapData}`).then((response) => {
-    //         await fetch("https://titiler.xyz/cog/tilejson.json?url=https://opendata.digitalglobe.com/events/mauritius-oil-spill/post-event/2020-08-12/105001001F1B5B00/105001001F1B5B00.tif").then((response) => {
-    //             setTileJson(response.json());
-    //         });
-    //     };
-    //     fetchTileJson();
-    // }, [mapData]);
-    
-    const RecenterAutomatically = () => {
-        const map = ReactLeaflet.useMap();
-        useEffect(() => {
-            map.setView(
-                center as LatLngExpression,
-                zoom
-            );
-        }, [center]);
-        return null;
-    }
+    // const RecenterAutomatically = () => {
+    //     const map = ReactLeaflet.useMap();
+    //     useEffect(() => {
+    //         map.setView(
+    //             center as LatLngExpression,
+    //             zoom
+    //         );
+    //     }, [center]);
+    //     return null;
+    // }
 
     useEffect(() => {
         const fetchTileJson = async () => {
-            axios.get(
+            const response = await axios.get(
                 "https://titiler.xyz/cog/tilejson.json", {
                 params: {
-                    url: "https://acri.blob.core.windows.net/acri/tiletest/L3m_20230809__ATLNW_1_AV-MOD_NRRS678_DAY_00.NRRS678_flags_tiled.tif",
+                    url: mapData, //"https://acri.blob.core.windows.net/acri/tiletest/NFLH_flags.tif",
                     headers: {
                         'Content-Type': 'application/json',
                         'Access-Control-Allow-Origin': 'https://titiler.xyz',
                     },
                 }
             }).then((response) => {
-                setTileJson(response.data);
+                let respData = response.data;
+                console.log(respData);
+                respData.center = [respData.center[1], respData.center[0]] as LatLngExpression;
+                setTileJson(respData);
             });
-        };
-        fetchTileJson();
-    }, []);
+        }
+        if (mapData) {
+            fetchTileJson();
+        }
+    }, [mapData]);
 
     return (
         <ReactLeaflet.MapContainer className={className} center={[center[0], center[1]]} zoom={zoom} >
-            {(tileJson && tileJson.tiles && (
+            {(tileJson) ? (
                 <ReactLeaflet.TileLayer
                     url={tileJson.tiles[0]}
-                    tileSize={128}
+                    tileSize={512}
+                    minZoom={tileJson.minzoom}
                     crossOrigin={true}
-                    bounds={tileJson.bounds}
+                    attribution={tileJson.attribution}
+                    tms={true}
                 />
-            ))
-            }
-            {(tileJson && tileJson.tiles && (
-                <ReactLeaflet.Rectangle
-                    bounds={tileJson.bounds}
-                />)
+            ) : (
+                <></>
             )}
-            {/* <ReactLeaflet.TileLayer
-                // url='./Suitable_habitat_proj_2020-10-07/{z}/{x}/{y}.png'
-                url=
-                bounds={[[45.000001068115196, -70.89516308639624],
-                    [51.5100010681152, -51.499833556670154]]}
-                zIndex={100}
-                tms={true}
-
-            /> */}
             {
                 (mapMarkers && mapMarkers.length > 0 && (
                     mapMarkers.map((marker: mapMarker) => (
@@ -109,7 +94,7 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution="&copy; OpenStreetMap contributors"
             />
-            <RecenterAutomatically />
+            {/* <RecenterAutomatically /> */}
         </ReactLeaflet.MapContainer>
     )
 }

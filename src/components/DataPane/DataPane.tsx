@@ -35,7 +35,7 @@ const DataPane = (
     { 
         mapCenter, setMapCenter, mapZoom, setMapData
     } : { 
-        mapCenter: number[], setMapCenter: React.Dispatch<React.SetStateAction<number[]>>, mapZoom: number, setMapData: React.Dispatch<React.SetStateAction<string>>
+        mapCenter: number[], setMapCenter: React.Dispatch<React.SetStateAction<number[]>>, mapZoom: number, setMapData: React.Dispatch<React.SetStateAction<string|undefined>>
     }
     ) => {
 
