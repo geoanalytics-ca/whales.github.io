@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Collection, Item } from '@stac/StacObjects'; 
+import { Collection, Item } from '../stac/StacObjects'; 
 import { 
     fetchItemRefACRI,
     fetchItemRefSuitableHabitat,

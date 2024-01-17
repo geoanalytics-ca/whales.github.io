@@ -1,6 +1,6 @@
 import { fetchCatalog, fetchCollection, fetchItems, fetchItem } from '@services/stac';
-import React, { useState, useEffect, use } from 'react';
-import { Catalog, Collection, Item, Asset, STACLink } from '@stac/StacObjects';
+import React, { useState, useEffect } from 'react';
+import { Catalog, Collection, Asset, STACLink } from '../../stac/StacObjects';
 import { FaImage, FaMap } from "react-icons/fa";
 import { GiWhaleTail } from "react-icons/gi";
 import { 
@@ -77,7 +77,7 @@ const DataPane = (
         if (catalog === undefined) {
             return;
         }
-        const collection = catalog.links.find((c) => c.title === collectionId);
+        const collection = catalog.links.find((c: STACLink) => c.title === collectionId);
         console.log('Collection:', collection);
         if (collection !== undefined) {
             const isAlreadySelected = selectedCollection === collection;
@@ -187,7 +187,7 @@ const DataPane = (
                         >
                         {
                         (catalog && catalog.links) ? (
-                            catalog.links.filter((link) => link.rel === 'child').map((link) =>
+                            catalog.links.filter((link: STACLink) => link.rel === 'child').map((link: STACLink) =>
                                 <Radio className="flex-1" key={link.title} value={link.title}>
                                     {link.title}
                                 </Radio>

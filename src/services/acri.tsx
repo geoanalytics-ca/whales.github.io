@@ -1,4 +1,4 @@
-import { Collection, STACLink } from '@stac/StacObjects';
+import { Collection, STACLink } from '../stac/StacObjects';
 
 export const fetchItemRefACRI = (collection: Collection, searchDates: string[]): STACLink[] => {
     const filterStringsBySubstring = (itemHrefs: STACLink[], substrings: string[]): STACLink[] => {
@@ -13,7 +13,7 @@ export const fetchItemRefACRI = (collection: Collection, searchDates: string[]):
 
 export const fetchItemRefSuitableHabitat = (collection: Collection, searchDates: string[]): STACLink[] => {
     const validDates: STACLink[] = [];
-    collection.links.filter((link) => (link.rel === 'item')).forEach((itemLink) => {
+    collection.links.filter((link: STACLink) => (link.rel === 'item')).forEach((itemLink) => {
         searchDates.forEach((searchDate) => {
             if (itemLink.href.includes(searchDate)) {
                 validDates.push(itemLink);

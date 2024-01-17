@@ -40,7 +40,7 @@ const Stream2 = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-        <MapComponent className="stream2-map" center={mapCenter} zoom={mapZoom} mapData={mapData} mapMarkers={[]} >
+        <MapComponent className="stream2-map" center={mapCenter} zoom={mapZoom} mapData={mapData} >
         </MapComponent>
         <Card>
           <DataComponent 
