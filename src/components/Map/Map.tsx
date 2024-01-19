@@ -25,14 +25,13 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
 
     useEffect(() => {
         const fetchTileJson = async () => {
-            const response = await axios.get(
+            await axios.get(
                 "https://titiler.xyz/cog/tilejson.json", {
                 params: {
-                    url: mapData, //"https://acri.blob.core.windows.net/acri/tiletest/NFLH_flags.tif",
+                    url: mapData,
                     colormap_name: "viridis",
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': 'geoanalytics-ca.github.io',
+                        'Content-Type': 'application/json'
                     },
                 }
             }).then((response) => {
