@@ -28,7 +28,7 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
             const response = await axios.get(
                 "https://titiler.xyz/cog/tilejson.json", {
                 params: {
-                    url: mapData,
+                    url: mapData, //"https://acri.blob.core.windows.net/acri/tiletest/NFLH_flags.tif",
                     colormap_name: "viridis",
                     headers: {
                         'Content-Type': 'application/json',
