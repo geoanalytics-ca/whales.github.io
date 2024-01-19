@@ -28,11 +28,10 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
             await axios.get(
                 "https://titiler.xyz/cog/tilejson.json", {
                 params: {
-                    url: mapData, //"https://acri.blob.core.windows.net/acri/tiletest/NFLH_flags.tif",
+                    url: mapData,
                     colormap_name: "viridis",
                     headers: {
                         'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': 'geoanalytics-ca.github.io',
                     },
                 }
             }).then((response) => {
