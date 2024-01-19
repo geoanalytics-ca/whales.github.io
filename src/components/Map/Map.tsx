@@ -32,7 +32,7 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
                     colormap_name: "viridis",
                     headers: {
                         'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': 'https://titiler.xyz',
+                        'Access-Control-Allow-Origin': 'geoanalytics-ca.github.io',
                     },
                 }
             }).then((response) => {
