@@ -29,7 +29,7 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
                 "https://titiler.xyz/cog/tilejson.json", {
                 params: {
                     url: mapData,
-                    colormap_name: "viridis",
+                    // colormap_name: "viridis", // @TODO: fix - CORS error Access-Control-Allow-Origin missing in response
                     headers: {
                         'Content-Type': 'application/json',
                     },
