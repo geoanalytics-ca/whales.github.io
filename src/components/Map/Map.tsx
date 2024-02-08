@@ -3,6 +3,7 @@ import 'leaflet/dist/leaflet.css';
 import * as ReactLeaflet from 'react-leaflet';
 import React, { JSX, useEffect, useState } from 'react';
 import axios from 'axios';
+import https from "https";
 
 const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: number[]; zoom: number; mapData: string|undefined }) => {
     const { className, center, zoom, mapData } = props;
@@ -25,7 +26,6 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
                 "https://arctus.geoanalytics.ca/titiler/cog/tilejson.json", {
                 params: {
                     url: mapData,
-                    // colormap: "viridis", // @TODO: fix - CORS error Access-Control-Allow-Origin missing in response
                     colormap: {
                         0: "#440154",
                         200: "#482878",
@@ -34,10 +34,14 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
                         800: "#35b779",
                         1000: "#35b779",
                     },
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                }
+                    rescale: "0,1000"
+                },
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                httpsAgent: new https.Agent({
+                    rejectUnauthorized: false
+                })
             }).then((response) => {
                 let respData = response.data;
                 console.log(respData);
