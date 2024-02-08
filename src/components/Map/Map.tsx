@@ -26,15 +26,7 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
                 "https://arctus.geoanalytics.ca/titiler/cog/tilejson.json", {
                 params: {
                     url: mapData,
-                    colormap: {
-                        0: "#440154",
-                        200: "#482878",
-                        400: "#3e4a89",
-                        600: "#31688e",
-                        800: "#35b779",
-                        1000: "#35b779",
-                    },
-                    rescale: "0,1000"
+                    colormap_name: "viridis",
                 },
                 headers: {
                     'Content-Type': 'application/json'
