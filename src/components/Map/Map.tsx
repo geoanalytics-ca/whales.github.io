@@ -25,7 +25,14 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
                 "https://arctus.geoanalytics.ca/titiler/cog/tilejson.json", {
                 params: {
                     url: mapData,
-                    colormap: "viridis", // @TODO: fix - CORS error Access-Control-Allow-Origin missing in response
+                    // colormap: "viridis", // @TODO: fix - CORS error Access-Control-Allow-Origin missing in response
+                    colormap: {
+                        0: "#440154",
+                        64: "#482878",
+                        128: "#3e4a89",
+                        192: "#31688e",
+                        255: "#35b779",
+                    },
                     headers: {
                         'Content-Type': 'application/json'
                     },
