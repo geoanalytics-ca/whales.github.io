@@ -1,16 +1,12 @@
 import { LatLngExpression} from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import * as ReactLeaflet from 'react-leaflet';
-import React, { JSX, use, useEffect, useState } from 'react';
-// import { mapMarker } from '../../types/map';
-import { Icon } from 'leaflet';
-
-import axios, { AxiosResponse } from 'axios';
+import React, { JSX, useEffect, useState } from 'react';
+import axios from 'axios';
 
 const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: number[]; zoom: number; mapData: string|undefined }) => {
     const { className, center, zoom, mapData } = props;
     const [tileJson, setTileJson] = useState<any>(null);
-    const [titilerResponse, setTitilerResponse] = useState<AxiosResponse<any, any>>();
 
     // const RecenterAutomatically = () => {
     //     const map = ReactLeaflet.useMap();
@@ -26,12 +22,12 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
     useEffect(() => {
         const fetchTileJson = async () => {
             await axios.get(
-                "https://titiler.xyz/cog/tilejson.json", {
+                "https://arctus.geoanalytics.ca/titiler/cog/tilejson.json", {
                 params: {
                     url: mapData,
                     // colormap_name: "viridis", // @TODO: fix - CORS error Access-Control-Allow-Origin missing in response
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
                 }
             }).then((response) => {
