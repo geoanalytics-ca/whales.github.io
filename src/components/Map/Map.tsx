@@ -8,6 +8,7 @@ import https from "https";
 const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: number[]; zoom: number; mapData: string|undefined }) => {
     const { className, center, zoom, mapData } = props;
     const [tileJson, setTileJson] = useState<any>(null);
+    const [hist, setHist] = useState<any>(null);
 
     // const RecenterAutomatically = () => {
     //     const map = ReactLeaflet.useMap();
@@ -23,11 +24,23 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
     useEffect(() => {
         const fetchTileJson = async () => {
             await axios.get(
+                "https://arctus.geoanalytics.ca/titiler/cog/info", {
+                params: {
+                    url: mapData
+                },
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then((response) => {
+                let respData = response.data;
+                console.log(`COG INFO: ${respData}`); 
+            });
+            await axios.get(
                 "https://arctus.geoanalytics.ca/titiler/cog/tilejson.json", {
                 params: {
                     url: mapData,
                     colormap_name: ["viridis"],
-                    rescale: "0,255"
+                    rescale: "0,1"
                 },
                 headers: {
                     'Content-Type': 'application/json'
