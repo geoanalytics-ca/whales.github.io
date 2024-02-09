@@ -27,7 +27,7 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
                 params: {
                     url: mapData,
                     colormap_name: ["viridis"],
-                    rescale: "0,255"
+                    // rescale: "0,255"
                 },
                 headers: {
                     'Content-Type': 'application/json'
