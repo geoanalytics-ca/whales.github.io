@@ -24,9 +24,11 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
     useEffect(() => {
         const fetchTileJson = async () => {
             await axios.get(
-                "https://arctus.geoanalytics.ca/titiler/cog/info", {
+                "https://arctus.geoanalytics.ca/titiler/cog/statistics", {
                 params: {
-                    url: mapData
+                    url: mapData,
+                    bidx: 1,
+                    
                 },
                 headers: {
                     'Content-Type': 'application/json'
