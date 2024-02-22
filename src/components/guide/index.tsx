@@ -1,0 +1,1 @@
+export {default} from './guide'; // Path: src/components/guide/index.tsx
