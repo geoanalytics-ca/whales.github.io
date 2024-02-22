@@ -1,5 +1,6 @@
 import React from 'react';
-import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button} from "@nextui-org/react";
+import {Navbar, NavbarBrand} from "@nextui-org/react";
+import UserGuideModal from './guide';
 
 const AcmeLogo = () => (
   <svg fill="none" height="36" viewBox="0 0 32 32" width="36">
@@ -32,6 +33,7 @@ const TopBar = () => {
           </Link>
         </NavbarItem>
       </NavbarContent> */}
+      <UserGuideModal />
     </Navbar>
   );
 }
