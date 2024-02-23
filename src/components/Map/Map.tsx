@@ -53,6 +53,23 @@ const DataMap = (
                 },
                 headers: {
                     'Content-Type': 'application/json'
+                }
+            }).then((response : any) => {
+                let respData = response.data;
+                console.log(respData);
+                let min_pc = Number(respData['b1']['percentile_2']); 
+                let max_pc = Number(respData['b1']['percentile_98']);
+                setDataRange([min_pc, max_pc]);
+            });
+            await axios.get(
+                    `${titilerBaseUrl}/cog/tilejson.json`, {
+                params: {
+                    url: mapData,
+                    colormap_name: ["viridis"],
+                    rescale: dataRange.join(',')
+                },
+                headers: {
+                    'Content-Type': 'application/json'
                 },
                 httpsAgent: new https.Agent({
                     rejectUnauthorized: false
