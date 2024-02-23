@@ -33,7 +33,7 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
                 headers: {
                     'Content-Type': 'application/json'
                 }
-            }).then((response) => {
+            }).then((response : any) => {
                 let respData = response.data;
                 console.log(`COG INFO: ${respData}`); 
             });
@@ -42,7 +42,6 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
                 params: {
                     url: mapData,
                     colormap_name: ["viridis"],
-                    rescale: "0,1"
                 },
                 headers: {
                     'Content-Type': 'application/json'
@@ -50,7 +49,7 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
                 httpsAgent: new https.Agent({
                     rejectUnauthorized: false
                 })
-            }).then((response) => {
+            }).then((response : any) => {
                 let respData = response.data;
                 console.log(respData);
                 respData.center = [respData.center[1], respData.center[0]] as LatLngExpression;
