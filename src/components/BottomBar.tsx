@@ -15,8 +15,8 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <div className="bottom-bar w-full fixed bottom-0 left-0 right-0 h-16 bg-gray-100 text-black z-50">
-        This is the bottom-bar
+    <div className="bottom-bar w-full fixed bottom-0 left-0 right-0 h-16 bg-black-100 text-white z-50">
+        <br />
     </div>
   );
 }

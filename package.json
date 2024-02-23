@@ -23,6 +23,7 @@
     "react-leaflet": "^4.2.1",
     "sass": "^1.69.5",
     "serve": "^14.2.1",
+    "styled-components": "^6.1.8",
     "xarray": "^0.0.3"
   },
   "devDependencies": {
