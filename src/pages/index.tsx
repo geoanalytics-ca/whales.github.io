@@ -29,6 +29,8 @@ const Stream2 = () => {
   const [mapCenter, setMapCenter] = useState<number[]>([47.733359, -62.465233]);
   const [mapZoom, setMapZoom] = useState<number>(6);
   const [mapData, setMapData] = useState<string|undefined>();
+  const [colorMap, setColorMap] = useState<string|undefined>();
+  const [dataRange, setDataRange] = useState<number[]>([0,1000])
 
   console.log('Starting up Stream 2 UI')
   return (
@@ -40,11 +42,12 @@ const Stream2 = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-        <MapComponent className="stream2-map" center={mapCenter} zoom={mapZoom} mapData={mapData} >
+        <MapComponent className="stream2-map" center={mapCenter} zoom={mapZoom} mapData={mapData} colorMap={colorMap} dataRange={dataRange} setDataRange={setDataRange}>
         </MapComponent>
         <Card>
           <DataComponent 
             mapCenter={mapCenter} setMapCenter={setMapCenter} mapZoom={mapZoom} setMapData={setMapData}
+            setColorMap={setColorMap} setDataRange={setDataRange}
             >
           </DataComponent>
         </Card>

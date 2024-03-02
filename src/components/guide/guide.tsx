@@ -8,6 +8,29 @@ import {
 import { FaInfo } from "react-icons/fa";
 import styled from 'styled-components';
 
+const GuideContainer = styled.div`
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    `;
+
+const GuideTitle = styled.h2`
+    color: #333;
+    margin-bottom: 10px;
+    `;
+
+const GuideSectionTitle = styled.h3`
+    color: #666;
+    margin: 10px 0;
+    `;
+
+const GuideText = styled.p`
+    color: #333;
+    line-height: 1.6;
+    `;
+
 const UserGuideModal: React.FC = () => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
 
@@ -18,29 +41,6 @@ const UserGuideModal: React.FC = () => {
     const closeModal = () => {
         setModalIsOpen(false);
     };
-
-    const GuideContainer = styled.div`
-    margin: 20px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    `;
-
-    const GuideTitle = styled.h2`
-    color: #333;
-    margin-bottom: 10px;
-    `;
-
-    const GuideSectionTitle = styled.h3`
-    color: #666;
-    margin: 10px 0;
-    `;
-
-    const GuideText = styled.p`
-    color: #333;
-    line-height: 1.6;
-    `;
 
     return (
         <div>

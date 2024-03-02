@@ -5,8 +5,29 @@ import React, { JSX, useEffect, useState } from 'react';
 import axios from 'axios';
 import https from "https";
 
-const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: number[]; zoom: number; mapData: string|undefined }) => {
-    const { className, center, zoom, mapData } = props;
+import { scaleLog } from 'd3-scale';
+import { interpolateViridis } from 'd3-scale-chromatic';
+
+const createLogScaleColorMap = (min: number, max: number) => {
+    const logScale = scaleLog().domain([min, max]).range([0, 1]);
+    return (value: number) => interpolateViridis(logScale(value));
+}
+
+const titilerBaseUrl: string = "https://arctus.geoanalytics.ca/titiler";
+
+const DataMap = (
+    props: JSX.IntrinsicAttributes & 
+    { className: string; 
+        center: number[]; 
+        zoom: number; 
+        mapData: string|undefined;
+        colorMap: string|undefined;
+        dataRange: number[];
+        setDataRange: React.Dispatch<React.SetStateAction<number[]>>;
+        // scaling: "log10" | "linear";
+    }
+    ) => {
+    const { className, center, zoom, mapData, colorMap, dataRange, setDataRange } = props;
     const [tileJson, setTileJson] = useState<any>(null);
     const [hist, setHist] = useState<any>(null);
 
@@ -24,24 +45,31 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
     useEffect(() => {
         const fetchTileJson = async () => {
             await axios.get(
-                "https://arctus.geoanalytics.ca/titiler/cog/statistics", {
+                `${titilerBaseUrl}/cog/statistics`, {
                 params: {
                     url: mapData,
-                    bidx: 1,
-                    
+                    pmin: 2, 
+                    pmax: 98, 
                 },
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                httpsAgent: new https.Agent({
+                    rejectUnauthorized: false
+                })
             }).then((response : any) => {
                 let respData = response.data;
-                console.log(`COG INFO: ${respData}`); 
+                console.log(respData);
+                let min_pc = Number(respData['b1']['percentile_2']); 
+                let max_pc = Number(respData['b1']['percentile_98']);
+                setDataRange([min_pc, max_pc]);
             });
             await axios.get(
-                "https://arctus.geoanalytics.ca/titiler/cog/tilejson.json", {
+                    `${titilerBaseUrl}/cog/tilejson.json`, {
                 params: {
                     url: mapData,
-                    colormap_name: ["viridis"],
+                    colormap_name: "viridis",
+                    rescale: dataRange.join(',') //typeof dataRange[0] === 'string' ? dataRange.join(',') : dataRange
                 },
                 headers: {
                     'Content-Type': 'application/json'
@@ -78,6 +106,7 @@ const DataMap = (props: JSX.IntrinsicAttributes & { className: string; center: n
                 attribution="&copy; OpenStreetMap contributors"
             />
             {/* <RecenterAutomatically /> */}
+            <ReactLeaflet.ScaleControl position="topleft" />
         </ReactLeaflet.MapContainer>
     )
 }
