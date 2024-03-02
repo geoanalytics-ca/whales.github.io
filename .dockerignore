@@ -5,3 +5,5 @@ node_modules
 
 store-connect-test.py
 Taskfile.yml
+
+run-titiler.sh

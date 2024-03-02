@@ -6,7 +6,6 @@ import { GiWhaleTail } from "react-icons/gi";
 import { 
     Card,
     CardBody,
-    Spinner,
     RadioGroup,
     Radio,
     Table,
@@ -35,14 +34,18 @@ const DataPane = (
     { 
         mapCenter, setMapCenter, mapZoom, setMapData
     } : { 
-        mapCenter: number[], setMapCenter: React.Dispatch<React.SetStateAction<number[]>>, mapZoom: number, setMapData: React.Dispatch<React.SetStateAction<string|undefined>>
+        mapCenter: number[],
+        setMapCenter: React.Dispatch<React.SetStateAction<number[]>>,
+        mapZoom: number, 
+        setMapData: React.Dispatch<React.SetStateAction<string|undefined>>,
+        setColorMap: React.Dispatch<React.SetStateAction<string|undefined>>,
+        setDataRange: React.Dispatch<React.SetStateAction<number[]>>
     }
     ) => {
 
     const [selected, setSelected] = React.useState("");
 
     const [catalog, setCatalog] = useState<Catalog>(); 
-    const [collections, setCollections] = useState<Collection[]>([]);     
     const [itemLinks, setItemLinks] = useState<STACLink[]>([]);
     const [assetLinks, setAssetLinks] = useState<assetLink[]>([]);
     
