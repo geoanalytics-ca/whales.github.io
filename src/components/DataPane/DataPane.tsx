@@ -54,8 +54,15 @@ const DataPane = (
     const [assetLinks, setAssetLinks] = useState<assetLink[]>([]);
     
     // Track the state of the query parameters
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
+    const [startDate, setStartDate] = useState(() => {
+        const date = new Date();
+        date.setDate(date.getDate() - 1);
+        return date.toISOString().split('T')[0];
+    });
+    const [endDate, setEndDate] = useState(() => {
+        const date = new Date();
+        return date.toISOString().split('T')[0];
+    });
     
     // Track which Item's should be rendered
     const [selectedCollection, setSelectedCollection] = useState<STACLink>(); // Track selected collections
@@ -143,14 +150,13 @@ const DataPane = (
         const _assetLinks: assetLink[] = [];
 
         await fetchItem(itemHref).then((item) => {
-            let itemProperties = item.properties;
-            console.log('Item Properties:', itemProperties);
-            if ('visualization' in itemProperties) {
-                console.log('Visualization:', itemProperties.visualization);
-                setColorMap(itemProperties.visualization.colorRamp);
-                setDataRange(itemProperties.visualization.range);
-                setScale(itemProperties.visualization.scaling);
-                setUnits(itemProperties.visualization.units);
+            if ('visualization' in item.properties) {
+                console.log('Item Properties:', item.properties);
+                console.log('Visualization:', item.properties.visualization);
+                setColorMap(item.properties.visualization.colorRamp);
+                setDataRange(item.properties.visualization.range);
+                setScale(item.properties.visualization.scaling);
+                setUnits(item.properties.visualization.units);
             }
             for (const [key, value] of Object.entries(item.assets)) {
                 const _asset = value as Asset;
