@@ -32,14 +32,18 @@ type assetLink = {
 
 const DataPane = (
     { 
-        mapCenter, setMapCenter, mapZoom, setMapData
+        mapCenter, setMapCenter, mapZoom, 
+        setMapData, setColorMap, setDataRange, setScale,
+        setUnits
     } : { 
         mapCenter: number[],
-        setMapCenter: React.Dispatch<React.SetStateAction<number[]>>,
-        mapZoom: number, 
-        setMapData: React.Dispatch<React.SetStateAction<string|undefined>>,
-        setColorMap: React.Dispatch<React.SetStateAction<string|undefined>>,
+        setMapCenter: React.Dispatch<React.SetStateAction<number[]>>
+        mapZoom: number
+        setMapData: React.Dispatch<React.SetStateAction<string|undefined>>
+        setColorMap: React.Dispatch<React.SetStateAction<string|undefined>>
         setDataRange: React.Dispatch<React.SetStateAction<number[]>>
+        setScale: React.Dispatch<React.SetStateAction<string|undefined>>
+        setUnits: React.Dispatch<React.SetStateAction<string|undefined>>
     }
     ) => {
 
@@ -138,7 +142,16 @@ const DataPane = (
 
         const _assetLinks: assetLink[] = [];
 
-        const item = await fetchItem(itemHref).then((item) => {
+        await fetchItem(itemHref).then((item) => {
+            let itemProperties = item.properties;
+            console.log('Item Properties:', itemProperties);
+            if ('visualization' in itemProperties) {
+                console.log('Visualization:', itemProperties.visualization);
+                setColorMap(itemProperties.visualization.colorRamp);
+                setDataRange(itemProperties.visualization.range);
+                setScale(itemProperties.visualization.scaling);
+                setUnits(itemProperties.visualization.units);
+            }
             for (const [key, value] of Object.entries(item.assets)) {
                 const _asset = value as Asset;
                 console.log(`${key}: ${value}`);
@@ -218,9 +231,9 @@ const DataPane = (
 
     const renderOnMap = async (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
         console.log('Render on Map');
-        const itemHref = event.currentTarget.getAttribute('name');
-        (itemHref) ? (
-            setMapData(itemHref)
+        const assetHref = event.currentTarget.getAttribute('name');
+        (assetHref) ? (
+            setMapData(assetHref)
         ) : (
             console.log('No item href')
         )
@@ -274,7 +287,6 @@ const DataPane = (
                     <Card className="flex-1">
                         <CardBody>
                         {(itemLinks.length > 0) ? (
-                            console.log('Rendering items'),
                             <Table 
                                 aria-label="Example static collection table"
                                 color={"default"}
@@ -282,8 +294,8 @@ const DataPane = (
                                 defaultSelectedKeys={[]}
                                 isHeaderSticky={true}
                                 classNames={{
-                                    base: "max-h-[400px] overflow-scroll",
-                                    table: "min-h-[425px]",
+                                    base: "max-h-[300px] overflow-scroll",
+                                    table: "min-h-[325px]",
                                 }}
                             >
                                 <TableHeader>
@@ -300,7 +312,6 @@ const DataPane = (
                                 </TableBody>
                             </Table>
                             ) : (
-                            console.log('No items to display'),
                             <div className="flex justify-center">
                                 <GiWhaleTail size={50} />
                             </div>
@@ -312,7 +323,6 @@ const DataPane = (
                 <Card className="flex">
                     <CardBody>
                         {(assetLinks.length > 0) ? (
-                            console.log('Rendering assets'),
                             <Table 
                             aria-label="Example static collection table"
                             color={"default"}

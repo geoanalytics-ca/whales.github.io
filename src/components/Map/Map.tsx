@@ -5,15 +5,11 @@ import React, { JSX, useEffect, useState } from 'react';
 import axios from 'axios';
 import https from "https";
 
-import { scaleLog } from 'd3-scale';
+import { scaleSequential } from 'd3-scale';
 import { interpolateViridis } from 'd3-scale-chromatic';
 
-const createLogScaleColorMap = (min: number, max: number) => {
-    const logScale = scaleLog().domain([min, max]).range([0, 1]);
-    return (value: number) => interpolateViridis(logScale(value));
-}
-
-const titilerBaseUrl: string = "https://arctus.geoanalytics.ca/titiler";
+// const titilerBaseUrl: string = "https://arctus.geoanalytics.ca/titiler";
+const titilerBaseUrl: string = "http://localhost:8000";
 
 const DataMap = (
     props: JSX.IntrinsicAttributes & 
@@ -24,12 +20,43 @@ const DataMap = (
         colorMap: string|undefined;
         dataRange: number[];
         setDataRange: React.Dispatch<React.SetStateAction<number[]>>;
-        // scaling: "log10" | "linear";
+        scale: string|undefined;
+        units: string|undefined;
     }
     ) => {
-    const { className, center, zoom, mapData, colorMap, dataRange, setDataRange } = props;
+    const { 
+        className, center, zoom, mapData, colorMap, dataRange, setDataRange, scale, units 
+    } = props;
     const [tileJson, setTileJson] = useState<any>(null);
     const [hist, setHist] = useState<any>(null);
+    const [colormapValues, setColormapValues] = useState<{[key: number]: string}>();
+
+    type ParamsType = {
+        url: string | undefined;
+        rescale: string;
+        colormap?: {};
+        colormap_name?: string;
+        expression?: string;
+    };
+
+    function clampedArray(arr: number[], min: number, max: number): number[] {
+        return arr.map(num => Math.max(min, Math.min(max, num)));
+    }
+
+    const createLogScaleColorMap = () => {
+        if (!hist) {
+            return;
+        } else {
+            let colorMap: {[key: number]: string} = {};
+            hist[1] = clampedArray(hist[1], dataRange[0], dataRange[1]);
+            const scale = scaleSequential([0,hist[1].length], interpolateViridis).clamp(true);
+            hist[1].forEach((value: number, index: number) => {
+                colorMap[value] = scale(index);
+            });
+            console.log(colorMap);
+            return colorMap;
+        }
+    }
 
     // const RecenterAutomatically = () => {
     //     const map = ReactLeaflet.useMap();
@@ -42,7 +69,13 @@ const DataMap = (
     //     return null;
     // }
 
+
     useEffect(() => {
+        console.log(`units: ${units}`)
+        console.log(`scale: ${scale}`);
+        console.log(`range: ${dataRange}`);
+        // console.log(`colormap: ${colorMap}`);
+        console.log(`colormapValues: ${colormapValues?.toString()}`);
         const fetchTileJson = async () => {
             await axios.get(
                 `${titilerBaseUrl}/cog/statistics`, {
@@ -50,6 +83,8 @@ const DataMap = (
                     url: mapData,
                     pmin: 2, 
                     pmax: 98, 
+                    histogram_bins: 100,
+                    histogram_range: typeof dataRange === 'string' ? dataRange : dataRange.join(","),
                 },
                 headers: {
                     'Content-Type': 'application/json'
@@ -60,37 +95,27 @@ const DataMap = (
             }).then((response : any) => {
                 let respData = response.data;
                 console.log(respData);
-                let min_pc = Number(respData['b1']['percentile_2']); 
-                let max_pc = Number(respData['b1']['percentile_98']);
-                setDataRange([min_pc, max_pc]);
+                setHist(respData['b1']['histogram']);
+                setColormapValues(createLogScaleColorMap());
             });
+            let parmas: ParamsType;
+            if (scale === 'log10') { // 'log10'
+                parmas = {
+                    url: mapData,
+                    rescale: typeof dataRange === 'string' ? dataRange : dataRange.join(","),
+                    colormap: JSON.stringify(colormapValues)
+                }
+            } else { // 'linear'
+                parmas = {
+                    url: mapData,
+                    rescale: typeof dataRange === 'string' ? dataRange : dataRange.join(","),
+                    colormap_name: colorMap
+                }
+            }
+
             await axios.get(
                     `${titilerBaseUrl}/cog/tilejson.json`, {
-                params: {
-                    url: mapData,
-                    colormap_name: ["viridis"],
-                    rescale: dataRange.join(',')
-                },
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                httpsAgent: new https.Agent({
-                    rejectUnauthorized: false
-                })
-            }).then((response : any) => {
-                let respData = response.data;
-                console.log(respData);
-                let min_pc = Number(respData['b1']['percentile_2']); 
-                let max_pc = Number(respData['b1']['percentile_98']);
-                setDataRange([min_pc, max_pc]);
-            });
-            await axios.get(
-                    `${titilerBaseUrl}/cog/tilejson.json`, {
-                params: {
-                    url: mapData,
-                    colormap_name: "viridis",
-                    rescale: dataRange.join(',') //typeof dataRange[0] === 'string' ? dataRange.join(',') : dataRange
-                },
+                params: parmas,
                 headers: {
                     'Content-Type': 'application/json'
                 },
