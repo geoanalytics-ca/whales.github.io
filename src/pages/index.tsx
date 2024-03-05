@@ -47,7 +47,7 @@ const Stream2 = () => {
         <MapComponent 
           className="stream2-map" 
           center={mapCenter} zoom={mapZoom} mapData={mapData} 
-          colorMap={colorMap} dataRange={dataRange} setDataRange={setDataRange}
+          colorMap={colorMap} dataRange={dataRange}
           scale={scale} units={units}
           >
         </MapComponent>
