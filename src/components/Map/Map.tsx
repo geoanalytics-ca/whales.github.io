@@ -1,7 +1,7 @@
 import { LatLngExpression} from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import * as ReactLeaflet from 'react-leaflet';
-import React, { JSX, useEffect, useState } from 'react';
+import React, { JSX, useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import https from "https";
 import * as d3 from "d3";
@@ -54,7 +54,7 @@ const DataMap = (
 
     type ColorMapType = Array<[[number, number], [number, number, number]]>;
 
-    const createScaleColorMap = async () => {
+    const createScaleColorMap = useCallback(async () => {
         if (!hist) {
             return;
         } else {
@@ -85,7 +85,7 @@ const DataMap = (
             console.log(colorMap);
             setColormapValues(colorMap);
         }
-    }
+    }, [hist]);
 
 
 
@@ -100,64 +100,64 @@ const DataMap = (
     //     return null;
     // }
 
+    const fetchTileJson = useCallback(async () => {
+        await axios.get(
+            `${titilerBaseUrl}/cog/statistics`, {
+            params: {
+                url: mapData,
+                pmin: 2, 
+                pmax: 98, 
+                histogram_bins: 100,
+                histogram_range: typeof dataRange === 'string' ? dataRange : dataRange.join(","),
+            },
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            httpsAgent: new https.Agent({
+                rejectUnauthorized: false
+            })
+        }).then((response : any) => {
+            let respData = response.data;
+            console.log(respData);
+            setHist(respData['b1']['histogram']);
+        });
+        let parmas: ParamsType;
+        parmas = {
+            url: mapData,
+            rescale: typeof dataRange === 'string' ? dataRange : dataRange.join(","),
+            colormap: JSON.stringify(colormapValues),
+        }                
+        if (scale === 'log10') { // 'log10'
+            if (hist) {
+                let histMax = hist[1][hist[1].length-1];
+                let histMin = hist[1][0];
+                parmas.expression = `(b1 - ${histMin}) / (${histMax} - ${histMin}) * 255`
+            }
+        }
+
+        await axios.get(
+                `${titilerBaseUrl}/cog/tilejson.json`, {
+            params: parmas,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            httpsAgent: new https.Agent({
+                rejectUnauthorized: true
+            })
+        }).then((response : any) => {
+            let respData = response.data;
+            console.log(respData);
+            respData.center = [respData.center[1], respData.center[0]] as LatLngExpression;
+            setTileJson(respData);
+        });
+    }, [mapData, dataRange, colormapValues, scale, hist]);
 
     useEffect(() => {
-        const fetchTileJson = async () => {
-            await axios.get(
-                `${titilerBaseUrl}/cog/statistics`, {
-                params: {
-                    url: mapData,
-                    pmin: 2, 
-                    pmax: 98, 
-                    histogram_bins: 100,
-                    histogram_range: typeof dataRange === 'string' ? dataRange : dataRange.join(","),
-                },
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                httpsAgent: new https.Agent({
-                    rejectUnauthorized: false
-                })
-            }).then((response : any) => {
-                let respData = response.data;
-                console.log(respData);
-                setHist(respData['b1']['histogram']);
-                createScaleColorMap();
-            });
-            let parmas: ParamsType;
-            parmas = {
-                url: mapData,
-                rescale: typeof dataRange === 'string' ? dataRange : dataRange.join(","),
-                colormap: JSON.stringify(colormapValues),
-            }                
-            if (scale === 'log10') { // 'log10'
-                if (hist) {
-                    let histMax = hist[1][hist[1].length-1];
-                    let histMin = hist[1][0];
-                    parmas.expression = `(b1 - ${histMin}) / (${histMax} - ${histMin}) * 255`
-                }
-            }
-
-            await axios.get(
-                    `${titilerBaseUrl}/cog/tilejson.json`, {
-                params: parmas,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                httpsAgent: new https.Agent({
-                    rejectUnauthorized: true
-                })
-            }).then((response : any) => {
-                let respData = response.data;
-                console.log(respData);
-                respData.center = [respData.center[1], respData.center[0]] as LatLngExpression;
-                setTileJson(respData);
-            });
-        }
         if (mapData) {
+            createScaleColorMap();
             fetchTileJson();
         }
-    }, [mapData, dataRange, scale, colormapValues, hist, createScaleColorMap]);
+    }, [mapData, dataRange, scale, colormapValues, hist, createScaleColorMap, fetchTileJson]);
 
     return (
         <ReactLeaflet.MapContainer className={className} center={[center[0], center[1]]} zoom={zoom} >

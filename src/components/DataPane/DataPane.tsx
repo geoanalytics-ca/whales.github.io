@@ -85,8 +85,8 @@ const DataPane = (
         setEndDate(event.target.value);
     };
 
-    const handleCollectionChange = async (collectionId: string) => { //async (event: React.ChangeEvent<HTMLInputElement>) => {
-        // const collectionId = event.target.name;
+    const handleCollectionChange = async (collectionId: string) => {
+        setSelected(collectionId);
         console.log('Collection ID:', collectionId);
         if (catalog === undefined) {
             return;
@@ -189,11 +189,11 @@ const DataPane = (
         };
         fetchCatalogData();
         console.log('Catalog:', catalog);
-    }, []);
+    }, [catalog]);
 
-    useEffect(() => {
-        handleCollectionChange(selected);
-    }, [selected]);
+    // useEffect(() => {
+    //     handleCollectionChange(selected);
+    // }, [selected]);
 
     const CollectionPane = (
         { catalog } : { catalog: Catalog | undefined }
@@ -204,8 +204,8 @@ const DataPane = (
                     Collections: 
                     <div className="flex w-full">
                         <RadioGroup
-                        value={selected}
-                        onValueChange={setSelected}
+                        // value={selected}
+                        onValueChange={handleCollectionChange}
                         >
                         {
                         (catalog && catalog.links) ? (
@@ -259,7 +259,7 @@ const DataPane = (
                 <ModalContent>
                     <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
                     <ModalBody>
-                        <Image src={previewLink} />
+                        <Image src={previewLink} alt='' />
                     </ModalBody>
                     <ModalFooter>
                         <Button color="danger" variant="light" onPress={onClose}>
@@ -354,11 +354,11 @@ const DataPane = (
                                                 <TableCell>{asset.parent}</TableCell>
                                                 {(asset.assetName === 'image' || asset.assetName == 'preview') ? (
                                                 <TableCell>
-                                                    <FaImage name={asset.href} size={20} onClick={showPreview} />
+                                                    <FaImage name={asset.href} size={20} onClick={showPreview} alt='' />
                                                 </TableCell>
                                                 ) : (
                                                 <TableCell>
-                                                    <FaMap name={asset.href} size={20} onClick={renderOnMap} />
+                                                    <FaMap name={asset.href} size={20} onClick={renderOnMap} alt=''/>
                                                 </TableCell>
                                                 )}
                                             </TableRow>
@@ -369,7 +369,7 @@ const DataPane = (
                             ) : (
                             console.log('No assets to display'),
                             <div className="flex justify-center">
-                                <FaImage size={10} />
+                                <FaImage size={10} alt='' />
                             </div>
                             )}
                     </CardBody>
