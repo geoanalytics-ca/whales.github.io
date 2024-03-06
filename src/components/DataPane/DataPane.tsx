@@ -204,7 +204,7 @@ const DataPane = (
                     Collections: 
                     <div className="flex w-full">
                         <RadioGroup
-                        // value={selected}
+                        value={selected}
                         onValueChange={handleCollectionChange}
                         >
                         {
