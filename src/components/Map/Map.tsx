@@ -64,112 +64,111 @@ const DataMap = (
     //     }, [center]);
     //     return null;
     // }
-
-    const fetchStatistics = async () => {
-        await axios.get(
-            `${titilerBaseUrl}/cog/statistics`, {
-            params: {
-                url: mapData,
-                pmin: 2, 
-                pmax: 98, 
-                histogram_bins: 100,
-                histogram_range: typeof dataRange === 'string' ? dataRange : dataRange.join(","),
-            },
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            httpsAgent: new https.Agent({
-                rejectUnauthorized: false
-            })
-        }).then((response : any) => {
-            let respData = response.data;
-            console.log(respData);
-            setHist(respData['b1']['histogram']);
-        });
-    };
-
     useEffect(() => {
+        const fetchStatistics = async () => {
+            await axios.get(
+                `${titilerBaseUrl}/cog/statistics`, {
+                params: {
+                    url: mapData,
+                    pmin: 2, 
+                    pmax: 98, 
+                    histogram_bins: 100,
+                    histogram_range: typeof dataRange === 'string' ? dataRange : dataRange.join(","),
+                },
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                httpsAgent: new https.Agent({
+                    rejectUnauthorized: false
+                })
+            }).then((response : any) => {
+                let respData = response.data;
+                console.log(respData);
+                setHist(respData['b1']['histogram']);
+            });
+        };
         if (mapData && dataRange) {
             fetchStatistics();
         }
     }, [mapData, dataRange]);
 
-    const createScaleColorMap = async () => {
-        if (!hist) {
-            return;
-        } else {
-            let colorMap: ColorMapType = [];
-            let histMax = hist[1][hist[1].length-1];
-            let histMin = hist[1][0];
-            const normalizedDataRange = hist[1].map((val: number) => {
-                let normVal = (val - histMin) / (histMax - histMin);
-                let cmapVal = Math.round(normVal * 255);
-                return cmapVal;
-            });
-            for (let index = 1; index < normalizedDataRange.length; index++) {
-                let thisIndex: number = normalizedDataRange[index];
-                if (index === 1) {
-                    colorMap.push([[0, thisIndex], [0, 0, 0]]);
-                    continue;
-                }
-                let prevIndex: number = normalizedDataRange[index-1];
-                let color = d3.interpolateViridis(index/normalizedDataRange.length);
-                let colorArray = d3.color(color)?.rgb();
-                if (colorArray) {
-                    colorMap.push([[prevIndex, thisIndex], [colorArray.r, colorArray.g, colorArray.b]]);
-                }
-                if (index === normalizedDataRange.length-1) {
-                    colorMap.push([[thisIndex, thisIndex+1], [255, 255, 255]]);
-                }
-            };
-            console.log(colorMap);
-            setColormapValues(colorMap);
-        }
-    };
-
     useEffect(() => {
+        const createScaleColorMap = async () => {
+            if (!hist) {
+                return;
+            } else {
+                let colorMap: ColorMapType = [];
+                let histMax = hist[1][hist[1].length-1];
+                let histMin = hist[1][0];
+                const normalizedDataRange = hist[1].map((val: number) => {
+                    let normVal = (val - histMin) / (histMax - histMin);
+                    let cmapVal = Math.round(normVal * 255);
+                    return cmapVal;
+                });
+                for (let index = 1; index < normalizedDataRange.length; index++) {
+                    let thisIndex: number = normalizedDataRange[index];
+                    if (index === 1) {
+                        colorMap.push([[0, thisIndex], [0, 0, 0]]);
+                        continue;
+                    }
+                    let prevIndex: number = normalizedDataRange[index-1];
+                    let color = d3.interpolateViridis(index/normalizedDataRange.length);
+                    let colorArray = d3.color(color)?.rgb();
+                    if (colorArray) {
+                        colorMap.push([[prevIndex, thisIndex], [colorArray.r, colorArray.g, colorArray.b]]);
+                    }
+                    if (index === normalizedDataRange.length-1) {
+                        colorMap.push([[thisIndex, thisIndex+1], [255, 255, 255]]);
+                    }
+                };
+                console.log(colorMap);
+                setColormapValues(colorMap);
+            }
+        };
+
+    
         if (hist) {
             createScaleColorMap();
         }
     }, [hist]);
 
-    const fetchTileJson = async () => {
-        let parmas: ParamsType;
-        parmas = {
-            url: mapData,
-            rescale: typeof dataRange === 'string' ? dataRange : dataRange.join(","),
-            colormap: JSON.stringify(colormapValues),
-        }                
-        if (scale === 'log10') { // 'log10'
-            if (hist) {
-                let histMax = hist[1][hist[1].length-1];
-                let histMin = hist[1][0];
-                parmas.expression = `(b1 - ${histMin}) / (${histMax} - ${histMin}) * 255`
-            }
-        }
-
-        await axios.get(
-                `${titilerBaseUrl}/cog/tilejson.json`, {
-            params: parmas,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            httpsAgent: new https.Agent({
-                rejectUnauthorized: true
-            })
-        }).then((response : any) => {
-            let respData = response.data;
-            console.log(respData);
-            respData.center = [respData.center[1], respData.center[0]] as LatLngExpression;
-            setTileJson(respData);
-        });
-    };
-
     useEffect(() => {
+        const fetchTileJson = async () => {
+            let parmas: ParamsType;
+            parmas = {
+                url: mapData,
+                rescale: typeof dataRange === 'string' ? dataRange : dataRange.join(","),
+                colormap: JSON.stringify(colormapValues),
+            }                
+            if (scale === 'log10') { // 'log10'
+                if (hist) {
+                    let histMax = hist[1][hist[1].length-1];
+                    let histMin = hist[1][0];
+                    parmas.expression = `(b1 - ${histMin}) / (${histMax} - ${histMin}) * 255`
+                }
+            }
+
+            await axios.get(
+                    `${titilerBaseUrl}/cog/tilejson.json`, {
+                params: parmas,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                httpsAgent: new https.Agent({
+                    rejectUnauthorized: true
+                })
+            }).then((response : any) => {
+                let respData = response.data;
+                console.log(respData);
+                respData.center = [respData.center[1], respData.center[0]] as LatLngExpression;
+                setTileJson(respData);
+            });
+        };
+
         if (mapData && dataRange && colormapValues.length != 0) {
             fetchTileJson();
         }
-    }, [mapData, dataRange, colormapValues]);
+    }, [mapData, dataRange, colormapValues, hist, scale]);
 
     return (
         <ReactLeaflet.MapContainer className={className} center={[center[0], center[1]]} zoom={zoom} >

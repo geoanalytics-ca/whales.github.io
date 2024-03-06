@@ -99,10 +99,10 @@ const DataPane = (
                 }
             }
         }
-        if (selected !== '') {
+        if (selected !== '' && catalog !== undefined && selectedCollection === undefined) {
             handleCollectionChange();
         }
-    }, [selected]);
+    }, [selected, catalog, selectedCollection]);
 
     const queryForItems = async () => {
         console.log('Querying for items');

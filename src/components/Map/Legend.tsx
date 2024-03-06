@@ -16,10 +16,6 @@ const ColorMapLegend: React.FC<ColorMapLegendProps> = ({ colorMap, scaleValues, 
     
     const map = useMap();
 
-    if (colorMap.length === 0 || scaleValues.length === 0 ) {
-        return null;
-    }
-
     useEffect(() => {
         const legend = new L.Control({ position: 'topright' });
         let localColorMap = colorMap;
