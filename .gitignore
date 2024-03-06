@@ -1,5 +1,9 @@
 data
 run-titiler.sh
+<<<<<<< HEAD
+
+=======
+>>>>>>> main
 # Logs
 logs
 *.log
