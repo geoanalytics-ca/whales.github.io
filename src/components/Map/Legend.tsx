@@ -74,11 +74,15 @@ const ColorMapLegend: React.FC<ColorMapLegendProps> = ({ colorMap, scaleValues, 
             return div;
         };
 
-        legend.addTo(map);
+        if (colorMap.length > 0 && scaleValues.length > 0) {
+            legend.addTo(map);
 
-        return () => {
-            map.removeControl(legend);
-        };
+            return () => {
+                map.removeControl(legend);
+            };
+        } else {
+            return;
+        }
     }, [map, colorMap, scaleValues, scaleMin, scaleMax, units]);
 
     return null;
