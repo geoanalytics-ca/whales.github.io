@@ -1,5 +1,5 @@
 import { fetchCatalog, fetchCollection, fetchItems, fetchItem } from '@services/stac';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Catalog, Collection, Asset, STACLink } from '../../stac/StacObjects';
 import { FaImage, FaMap } from "react-icons/fa";
 import { GiWhaleTail } from "react-icons/gi";
@@ -85,7 +85,7 @@ const DataPane = (
         setEndDate(event.target.value);
     };
 
-    const handleCollectionChange = async (collectionId: string) => {
+    const handleCollectionChange = useCallback(async (collectionId: string) => {
         setSelected(collectionId);
         console.log('Collection ID:', collectionId);
         if (catalog === undefined) {
@@ -119,7 +119,7 @@ const DataPane = (
         // if (collection !== undefined && selectedCollections.length > 0) {
         //     setSelectedCollections((prevSelectedCollections) => prevSelectedCollections.filter((c) => c !== collection));
         // }
-    };
+    }, [catalog, selectedCollection]);
 
     const queryForItems = async () => {
         console.log('Querying for items');
@@ -191,9 +191,9 @@ const DataPane = (
         console.log('Catalog:', catalog);
     }, [catalog]);
 
-    // useEffect(() => {
-    //     handleCollectionChange(selected);
-    // }, [selected]);
+    useEffect(() => {
+        handleCollectionChange(selected);
+    }, [selected, handleCollectionChange]);
 
     const CollectionPane = (
         { catalog } : { catalog: Catalog | undefined }
@@ -205,7 +205,7 @@ const DataPane = (
                     <div className="flex w-full">
                         <RadioGroup
                         value={selected}
-                        onValueChange={handleCollectionChange}
+                        onValueChange={setSelected}
                         >
                         {
                         (catalog && catalog.links) ? (
