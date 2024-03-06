@@ -16,12 +16,21 @@ const ColorMapLegend: React.FC<ColorMapLegendProps> = ({ colorMap, scaleValues, 
     
     const map = useMap();
 
+    if (colorMap.length === 0 || scaleValues.length === 0 ) {
+        return null;
+    }
+
     useEffect(() => {
         const legend = new L.Control({ position: 'topright' });
         let localColorMap = colorMap;
         let localScaleValues = scaleValues;
         let localScaleMin = scaleMin;
         let localScaleMax = scaleMax;
+        console.log('ColorMapLegend: colorMap:', colorMap);
+        console.log('ColorMapLegend: scaleValues:', scaleValues);
+        console.log('ColorMapLegend: scaleMin:', scaleMin);
+        console.log('ColorMapLegend: scaleMax:', scaleMax);
+
 
         legend.onAdd = function () {
             const div = L.DomUtil.create('div', 'info legend');
@@ -59,6 +68,11 @@ const ColorMapLegend: React.FC<ColorMapLegendProps> = ({ colorMap, scaleValues, 
             for (let i = 0; i < colorMap.length; i++) {
                 from = localScaleValues[i];
                 to = localScaleValues[i+1];
+
+                if (!localColorMap[i]) {
+                    continue;
+                }
+
                 let color = d3.color(`rgb(${localColorMap[i][1][0]}, ${localColorMap[i][1][1]}, ${localColorMap[i][1][2]})`);
                 let hexColor = color ? color.formatHex() : '#000000'; // default to black if color is undefined
                 labels.push(
