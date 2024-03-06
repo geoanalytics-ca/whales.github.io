@@ -8,8 +8,7 @@ import * as d3 from "d3";
 
 import Legend from './Legend';
 
-// const titilerBaseUrl: string = "https://arctus.geoanalytics.ca/titiler";
-const titilerBaseUrl: string = "http://localhost:8000";
+const titilerBaseUrl: string = "https://arctus.geoanalytics.ca/titiler";
 
 const DataMap = (
     props: JSX.IntrinsicAttributes & 

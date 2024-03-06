@@ -37,7 +37,6 @@ const DataPane = (
         setUnits
     } : { 
         mapCenter: number[],
-<<<<<<< HEAD
         setMapCenter: React.Dispatch<React.SetStateAction<number[]>>
         mapZoom: number
         setMapData: React.Dispatch<React.SetStateAction<string|undefined>>
@@ -45,13 +44,6 @@ const DataPane = (
         setDataRange: React.Dispatch<React.SetStateAction<number[]>>
         setScale: React.Dispatch<React.SetStateAction<string|undefined>>
         setUnits: React.Dispatch<React.SetStateAction<string|undefined>>
-=======
-        setMapCenter: React.Dispatch<React.SetStateAction<number[]>>,
-        mapZoom: number, 
-        setMapData: React.Dispatch<React.SetStateAction<string|undefined>>,
-        setColorMap: React.Dispatch<React.SetStateAction<string|undefined>>,
-        setDataRange: React.Dispatch<React.SetStateAction<number[]>>
->>>>>>> main
     }
     ) => {
 
