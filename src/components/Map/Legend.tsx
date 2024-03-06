@@ -22,10 +22,10 @@ const ColorMapLegend: React.FC<ColorMapLegendProps> = ({ colorMap, scaleValues, 
         let localScaleValues = scaleValues;
         let localScaleMin = scaleMin;
         let localScaleMax = scaleMax;
-        console.log('ColorMapLegend: colorMap:', colorMap);
-        console.log('ColorMapLegend: scaleValues:', scaleValues);
-        console.log('ColorMapLegend: scaleMin:', scaleMin);
-        console.log('ColorMapLegend: scaleMax:', scaleMax);
+        // console.log('ColorMapLegend: colorMap:', colorMap);
+        // console.log('ColorMapLegend: scaleValues:', scaleValues);
+        // console.log('ColorMapLegend: scaleMin:', scaleMin);
+        // console.log('ColorMapLegend: scaleMax:', scaleMax);
 
 
         legend.onAdd = function () {
