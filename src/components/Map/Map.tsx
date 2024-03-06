@@ -8,8 +8,7 @@ import * as d3 from "d3";
 
 import Legend from './Legend';
 
-// const titilerBaseUrl: string = "https://arctus.geoanalytics.ca/titiler";
-const titilerBaseUrl: string = "http://localhost:8000";
+const titilerBaseUrl: string = "https://arctus.geoanalytics.ca/titiler";
 
 const DataMap = (
     props: JSX.IntrinsicAttributes & 
@@ -125,14 +124,6 @@ const DataMap = (
                 setColormapValues(colorMap);
             }
         };
-
-    
-        if (mapData && hist) {
-            createScaleColorMap();
-        }
-    }, [mapData, hist]);
-
-    useEffect(() => {
         const fetchTileJson = async () => {
             let parmas: ParamsType;
             parmas = {
@@ -165,10 +156,11 @@ const DataMap = (
             });
         };
 
-        if (mapData && dataRange && colormapValues.length != 0) {
+        if (mapData && dataRange && hist && scale) {
+            createScaleColorMap();
             fetchTileJson();
         }
-    }, [mapData, dataRange, colormapValues, hist, scale]);
+    }, [mapData, dataRange, hist, scale]);
 
     return (
         <ReactLeaflet.MapContainer className={className} center={[center[0], center[1]]} zoom={zoom} >
