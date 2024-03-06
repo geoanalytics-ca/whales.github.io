@@ -177,7 +177,7 @@ const DataMap = (
             />
             {/* <RecenterAutomatically /> */}
             <ReactLeaflet.ScaleControl position="topleft" />
-            {hist && colormapValues && dataRangeMin && dataRangeMax && units && (
+            {hist && colormapValues.length != 0 && dataRangeMin && dataRangeMax && units && (
                 <Legend colorMap={colormapValues} scaleValues={hist[1]} scaleMin={dataRangeMin} scaleMax={dataRangeMax} units={units} />
             )}
         </ReactLeaflet.MapContainer>
