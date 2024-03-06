@@ -157,7 +157,7 @@ const DataMap = (
         if (mapData) {
             fetchTileJson();
         }
-    }, [mapData, dataRange, scale, colormapValues, hist]);
+    }, [mapData, dataRange, scale, colormapValues, hist, createScaleColorMap]);
 
     return (
         <ReactLeaflet.MapContainer className={className} center={[center[0], center[1]]} zoom={zoom} >
