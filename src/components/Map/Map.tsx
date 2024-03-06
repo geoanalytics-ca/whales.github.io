@@ -8,7 +8,8 @@ import * as d3 from "d3";
 
 import Legend from './Legend';
 
-const titilerBaseUrl: string = "https://arctus.geoanalytics.ca/titiler";
+// const titilerBaseUrl: string = "https://arctus.geoanalytics.ca/titiler";
+const titilerBaseUrl: string = "http://localhost:8000";
 
 const DataMap = (
     props: JSX.IntrinsicAttributes & 
@@ -27,7 +28,6 @@ const DataMap = (
     } = props;
     const [tileJson, setTileJson] = useState<any>(null);
     const [hist, setHist] = useState<any>(null);
-    // const [colormapValues, setColormapValues] = useState<{ [key: number]: string } | null>(null);
     const [colormapValues, setColormapValues] = useState<ColorMapType>([]);
 
     let dataRangeMin;
@@ -127,10 +127,10 @@ const DataMap = (
         };
 
     
-        if (hist) {
+        if (mapData && hist) {
             createScaleColorMap();
         }
-    }, [hist]);
+    }, [mapData, hist]);
 
     useEffect(() => {
         const fetchTileJson = async () => {
