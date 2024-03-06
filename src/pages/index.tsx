@@ -30,7 +30,7 @@ const Stream2 = () => {
   const [mapZoom, setMapZoom] = useState<number>(6);
   const [mapData, setMapData] = useState<string|undefined>();
   const [colorMap, setColorMap] = useState<string|undefined>();
-  const [dataRange, setDataRange] = useState<number[]>([0,1000])
+  const [dataRange, setDataRange] = useState<number[]>([])
   const [scale, setScale] = useState<string|undefined>()
   const [units, setUnits] = useState<string|undefined>()
 

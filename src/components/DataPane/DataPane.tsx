@@ -30,6 +30,10 @@ type assetLink = {
     parent: string;
 };
 
+type itemVisProperties = {
+    [key: string]: string;
+};
+
 const DataPane = (
     { 
         mapCenter, setMapCenter, mapZoom, 
@@ -49,6 +53,7 @@ const DataPane = (
     const [selected, setSelected] = React.useState("");
     const [catalog, setCatalog] = useState<Catalog>(); 
     const [itemLinks, setItemLinks] = useState<STACLink[]>([]);
+    const [itemVisProperties, setItemVisProperties] = useState<itemVisProperties>({});
     const [assetLinks, setAssetLinks] = useState<assetLink[]>([]);
     // Track the state of the query parameters
     const [startDate, setStartDate] = useState(() => {
@@ -136,10 +141,7 @@ const DataPane = (
             if ('visualization' in item.properties) {
                 console.log('Item Properties:', item.properties);
                 console.log('Visualization:', item.properties.visualization);
-                setColorMap(item.properties.visualization.colorRamp);
-                setDataRange(item.properties.visualization.range);
-                setScale(item.properties.visualization.scaling);
-                setUnits(item.properties.visualization.units);
+                setItemVisProperties(item.properties.visualization);
             }
             for (const [key, value] of Object.entries(item.assets)) {
                 const _asset = value as Asset;
@@ -220,6 +222,10 @@ const DataPane = (
         console.log('Render on Map');
         const assetHref = event.currentTarget.getAttribute('name');
         (assetHref) ? (
+            setColorMap(itemVisProperties.colorRamp),
+            setDataRange(typeof itemVisProperties.range === 'number' ? itemVisProperties.range : itemVisProperties.range.split(',').map(parseFloat)),
+            setScale(itemVisProperties.scaling),
+            setUnits(itemVisProperties.units),
             setMapData(assetHref)
         ) : (
             console.log('No item href')
