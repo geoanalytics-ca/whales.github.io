@@ -38,7 +38,7 @@ body {
   top: 40px;
   bottom: 40px;
   left: 0%;
-  width: 55%;
+  width: 65%;
   height: 100%;
   z-index: 0;
 }
@@ -48,7 +48,7 @@ body {
   top: 40px;
   bottom: 40px;
   left: 55%;
-  width: 45%;
+  width: 40%;
   height: 100%;
   z-index: 0;
 }
@@ -188,7 +188,7 @@ body {
   top: 40px;
   bottom: 40px;
   right: 0;
-  width: 45%;
+  width: 35%;
   min-width: 250px;
   height: calc(100% - 40px - 20px);
   /* background: rgba(9, 9, 9, 0.75); */

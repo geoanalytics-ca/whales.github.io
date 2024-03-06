@@ -145,7 +145,8 @@ const DataMap = (
                 parmas = {
                     url: mapData,
                     rescale: typeof dataRange === 'string' ? dataRange : dataRange.join(","),
-                    colormap_name: colorMapName
+                    // colormap_name: colorMapName
+                    colormap: JSON.stringify(colormapValues),
                 }
             }
 
