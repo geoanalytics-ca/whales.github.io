@@ -54,7 +54,47 @@ const DataMap = (
 
     type ColorMapType = Array<[[number, number], [number, number, number]]>;
 
-    const createScaleColorMap = useCallback(async () => {
+    // const RecenterAutomatically = () => {
+    //     const map = ReactLeaflet.useMap();
+    //     useEffect(() => {
+    //         map.setView(
+    //             center as LatLngExpression,
+    //             zoom
+    //         );
+    //     }, [center]);
+    //     return null;
+    // }
+
+    const fetchStatistics = async () => {
+        await axios.get(
+            `${titilerBaseUrl}/cog/statistics`, {
+            params: {
+                url: mapData,
+                pmin: 2, 
+                pmax: 98, 
+                histogram_bins: 100,
+                histogram_range: typeof dataRange === 'string' ? dataRange : dataRange.join(","),
+            },
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            httpsAgent: new https.Agent({
+                rejectUnauthorized: false
+            })
+        }).then((response : any) => {
+            let respData = response.data;
+            console.log(respData);
+            setHist(respData['b1']['histogram']);
+        });
+    };
+
+    useEffect(() => {
+        if (mapData && dataRange) {
+            fetchStatistics();
+        }
+    }, [mapData, dataRange]);
+
+    const createScaleColorMap = async () => {
         if (!hist) {
             return;
         } else {
@@ -85,42 +125,15 @@ const DataMap = (
             console.log(colorMap);
             setColormapValues(colorMap);
         }
+    };
+
+    useEffect(() => {
+        if (hist) {
+            createScaleColorMap();
+        }
     }, [hist]);
 
-
-
-    // const RecenterAutomatically = () => {
-    //     const map = ReactLeaflet.useMap();
-    //     useEffect(() => {
-    //         map.setView(
-    //             center as LatLngExpression,
-    //             zoom
-    //         );
-    //     }, [center]);
-    //     return null;
-    // }
-
-    const fetchTileJson = useCallback(async () => {
-        await axios.get(
-            `${titilerBaseUrl}/cog/statistics`, {
-            params: {
-                url: mapData,
-                pmin: 2, 
-                pmax: 98, 
-                histogram_bins: 100,
-                histogram_range: typeof dataRange === 'string' ? dataRange : dataRange.join(","),
-            },
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            httpsAgent: new https.Agent({
-                rejectUnauthorized: false
-            })
-        }).then((response : any) => {
-            let respData = response.data;
-            console.log(respData);
-            setHist(respData['b1']['histogram']);
-        });
+    const fetchTileJson = async () => {
         let parmas: ParamsType;
         parmas = {
             url: mapData,
@@ -150,14 +163,13 @@ const DataMap = (
             respData.center = [respData.center[1], respData.center[0]] as LatLngExpression;
             setTileJson(respData);
         });
-    }, [mapData, dataRange, colormapValues, scale, hist]);
+    };
 
     useEffect(() => {
-        if (mapData) {
-            createScaleColorMap();
+        if (mapData && dataRange && colormapValues.length != 0) {
             fetchTileJson();
         }
-    }, [mapData, dataRange, scale, colormapValues, hist, createScaleColorMap, fetchTileJson]);
+    }, [mapData, dataRange, colormapValues]);
 
     return (
         <ReactLeaflet.MapContainer className={className} center={[center[0], center[1]]} zoom={zoom} >
