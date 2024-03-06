@@ -46,27 +46,23 @@ const DataPane = (
         setUnits: React.Dispatch<React.SetStateAction<string|undefined>>
     }
     ) => {
-
     const [selected, setSelected] = React.useState("");
-
     const [catalog, setCatalog] = useState<Catalog>(); 
     const [itemLinks, setItemLinks] = useState<STACLink[]>([]);
     const [assetLinks, setAssetLinks] = useState<assetLink[]>([]);
-    
     // Track the state of the query parameters
     const [startDate, setStartDate] = useState(() => {
         const date = new Date();
-        date.setDate(date.getDate() - 1);
+        date.setDate(date.getDate() - 2);
         return date.toISOString().split('T')[0];
     });
     const [endDate, setEndDate] = useState(() => {
         const date = new Date();
+        date.setDate(date.getDate() - 1);
         return date.toISOString().split('T')[0];
     });
-    
     // Track which Item's should be rendered
     const [selectedCollection, setSelectedCollection] = useState<STACLink>(); // Track selected collections
-
     // PNG Modal
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
     const [previewLink, setPreviewLink] = useState<string>('');
@@ -85,41 +81,28 @@ const DataPane = (
         setEndDate(event.target.value);
     };
 
-    const handleCollectionChange = useCallback(async (collectionId: string) => {
-        setSelected(collectionId);
-        console.log('Collection ID:', collectionId);
-        if (catalog === undefined) {
-            return;
-        }
-        const collection = catalog.links.find((c: STACLink) => c.title === collectionId);
-        console.log('Collection:', collection);
-        if (collection !== undefined) {
-            const isAlreadySelected = selectedCollection === collection;
-            if (!isAlreadySelected) {
-                setSelectedCollection(collection);
-            } else if (collection !== undefined && selectedCollection !== undefined) {
-                setSelectedCollection(undefined);
+    useEffect(() => {
+        const handleCollectionChange = async () => {
+            let collectionId = selected;
+            console.log('Collection ID:', collectionId);
+            if (catalog === undefined) {
+                return;
+            }
+            const collection = catalog.links.find((c: STACLink) => c.title === collectionId);
+            console.log('Collection:', collection);
+            if (collection !== undefined) {
+                const isAlreadySelected = selectedCollection === collection;
+                if (!isAlreadySelected) {
+                    setSelectedCollection(collection);
+                } else if (collection !== undefined && selectedCollection !== undefined) {
+                    setSelectedCollection(undefined);
+                }
             }
         }
-        //     const isAlreadySelected = selectedCollections.some((c) => c === collection);
-        //     if (!isAlreadySelected) {
-        //         setSelectedCollections((prevSelectedCollections) => prevSelectedCollections.concat(collection));
-        //     } else if (collection !== undefined && selectedCollections.length > 0) {
-        //         setSelectedCollections((prevSelectedCollections) => prevSelectedCollections.filter((c) => c !== collection));
-        //     }
-        // }
-        // if (collection !== undefined) {
-        //     const isAlreadySelected = selectedCollections.some((c) => c === collection);
-        //     if (!isAlreadySelected) {
-        //         selectedCollections.push(collection);
-        //     } else if (collection !== undefined && selectedCollections.length > 0) {
-        //         setSelectedCollections((prevSelectedCollections) => prevSelectedCollections.filter((c) => c !== collection));
-        //     }
-        // };
-        // if (collection !== undefined && selectedCollections.length > 0) {
-        //     setSelectedCollections((prevSelectedCollections) => prevSelectedCollections.filter((c) => c !== collection));
-        // }
-    }, [catalog, selectedCollection]);
+        if (selected !== '') {
+            handleCollectionChange();
+        }
+    }, [selected]);
 
     const queryForItems = async () => {
         console.log('Querying for items');
@@ -187,13 +170,11 @@ const DataPane = (
                 setCatalog(catalog);
             });
         };
-        fetchCatalogData();
-        console.log('Catalog:', catalog);
+        if (catalog === undefined) {
+            fetchCatalogData();
+            console.log('Catalog:', catalog);
+        }
     }, [catalog]);
-
-    useEffect(() => {
-        handleCollectionChange(selected);
-    }, [selected, handleCollectionChange]);
 
     const CollectionPane = (
         { catalog } : { catalog: Catalog | undefined }
