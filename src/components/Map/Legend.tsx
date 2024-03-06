@@ -16,18 +16,12 @@ const ColorMapLegend: React.FC<ColorMapLegendProps> = ({ colorMap, scaleValues, 
     
     const map = useMap();
 
-    if (!colorMap || colorMap.length === 0) {
-        return null;
-    }
-    if (!scaleValues || scaleValues.length === 0) {
-        return null;
-    }
-    if (!scaleMin || !scaleMax) {
-        return null;
-    }
-
     useEffect(() => {
         const legend = new L.Control({ position: 'topright' });
+        let localColorMap = colorMap;
+        let localScaleValues = scaleValues;
+        let localScaleMin = scaleMin;
+        let localScaleMax = scaleMax;
 
         legend.onAdd = function () {
             const div = L.DomUtil.create('div', 'info legend');
@@ -37,35 +31,35 @@ const ColorMapLegend: React.FC<ColorMapLegendProps> = ({ colorMap, scaleValues, 
             let from;
             let to;
 
-            if (colorMap.length > 8 || scaleValues.length > 8) {
-                let minColor = colorMap[0];
-                let maxColor = colorMap[colorMap.length - 1];
-                let stepColor = Math.floor((colorMap.length - 2) / 8);
-                let stepScale = Math.floor((scaleValues.length - 2) / 8);
+            if (localColorMap.length > 8 || localScaleValues.length > 8) {
+                let minColor = localColorMap[0];
+                let maxColor = localColorMap[localColorMap.length - 1];
+                let stepColor = Math.floor((localColorMap.length - 2) / 8);
+                let stepScale = Math.floor((localScaleValues.length - 2) / 8);
                 let newColorMap = [minColor];
-                let newScaleValues = [scaleMin];
+                let newScaleValues = [localScaleMin];
 
                 for (let i = 1; i <= 8; i++) {
-                    if (colorMap.length > 8) {
-                        newColorMap.push(colorMap[i * stepColor]);
+                    if (localColorMap.length > 8) {
+                        newColorMap.push(localColorMap[i * stepColor]);
                     }
-                    if (scaleValues.length > 8) {
-                        let index = Math.round(scaleValues[i * stepScale]*100)/100;
+                    if (localScaleValues.length > 8) {
+                        let index = Math.round(localScaleValues[i * stepScale]*100)/100;
                         newScaleValues.push(index);
                     }
                 }
 
                 newColorMap.push(maxColor);
-                newScaleValues.push(scaleMax);
+                newScaleValues.push(localScaleMax);
 
-                colorMap = newColorMap;
-                scaleValues = newScaleValues;
+                localColorMap = newColorMap;
+                localScaleValues = newScaleValues;
             }
 
             for (let i = 0; i < colorMap.length; i++) {
-                from = scaleValues[i];
-                to = scaleValues[i+1];
-                let color = d3.color(`rgb(${colorMap[i][1][0]}, ${colorMap[i][1][1]}, ${colorMap[i][1][2]})`);
+                from = localScaleValues[i];
+                to = localScaleValues[i+1];
+                let color = d3.color(`rgb(${localColorMap[i][1][0]}, ${localColorMap[i][1][1]}, ${localColorMap[i][1][2]})`);
                 let hexColor = color ? color.formatHex() : '#000000'; // default to black if color is undefined
                 labels.push(
                     '<i style="background:' +
@@ -85,7 +79,7 @@ const ColorMapLegend: React.FC<ColorMapLegendProps> = ({ colorMap, scaleValues, 
         return () => {
             map.removeControl(legend);
         };
-    }, [map, colorMap, scaleValues]);
+    }, [map, colorMap, scaleValues, scaleMin, scaleMax, units]);
 
     return null;
 };
