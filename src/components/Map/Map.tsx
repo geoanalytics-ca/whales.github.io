@@ -102,10 +102,6 @@ const DataMap = (
 
 
     useEffect(() => {
-        console.log(`units: ${units}`)
-        console.log(`scale: ${scale}`);
-        console.log(`range: ${dataRange}`);
-        console.log(`colormapValues: ${colormapValues?.toString()}`);
         const fetchTileJson = async () => {
             await axios.get(
                 `${titilerBaseUrl}/cog/statistics`, {
@@ -129,23 +125,16 @@ const DataMap = (
                 createScaleColorMap();
             });
             let parmas: ParamsType;
+            parmas = {
+                url: mapData,
+                rescale: typeof dataRange === 'string' ? dataRange : dataRange.join(","),
+                colormap: JSON.stringify(colormapValues),
+            }                
             if (scale === 'log10') { // 'log10'
-                parmas = {
-                    url: mapData,
-                    rescale: typeof dataRange === 'string' ? dataRange : dataRange.join(","),
-                    colormap: JSON.stringify(colormapValues),
-                }                
                 if (hist) {
                     let histMax = hist[1][hist[1].length-1];
                     let histMin = hist[1][0];
                     parmas.expression = `(b1 - ${histMin}) / (${histMax} - ${histMin}) * 255`
-                }
-            } else { // 'linear'
-                parmas = {
-                    url: mapData,
-                    rescale: typeof dataRange === 'string' ? dataRange : dataRange.join(","),
-                    // colormap_name: colorMapName
-                    colormap: JSON.stringify(colormapValues),
                 }
             }
 
@@ -156,7 +145,7 @@ const DataMap = (
                     'Content-Type': 'application/json'
                 },
                 httpsAgent: new https.Agent({
-                    rejectUnauthorized: false
+                    rejectUnauthorized: true
                 })
             }).then((response : any) => {
                 let respData = response.data;
@@ -168,7 +157,7 @@ const DataMap = (
         if (mapData) {
             fetchTileJson();
         }
-    }, [mapData]);
+    }, [mapData, dataRange, scale, colormapValues, hist]);
 
     return (
         <ReactLeaflet.MapContainer className={className} center={[center[0], center[1]]} zoom={zoom} >
