@@ -12,7 +12,7 @@
     - [Item Results](#item-results)
     - [Asset Visualisation](#asset-visualisation)
 
-Navigatge to the webmap: [whales.github.io](https://geoanalytics-ca.github.io/whales.github.io/)
+# Navigatge to the webmap: [whales.github.io](https://geoanalytics-ca.github.io/whales.github.io/)
 
 Powered by [Folium]() and [STAC]()
 
@@ -43,3 +43,10 @@ Clicking the <i class="fas fa-camera"></i> icon will
 create a pop-up model of the Asset preview plot.
 The <i class="fas fa-map"></i> icon will visualise
 the remote data onto the map.
+
+
+## Product description 
+[Ocean Color Radiometric product description](ATBD_report/SIMBA_OCR_Report_V2.1.1_Signed.pdf)
+[Chlorophyll ATBD](ATBD_report/SIMBA_Chla_ATBD_V2.3.2_Signed.pdf)
+[Phenology ATBD](ATBD_report/SIMBA_Phenology_ATBD_V2.1.1_Signed.pdf)
+[Models description](ATBD_report/FinalReport_Modelisation_SIMBA_MS6_TJ.pdf)
