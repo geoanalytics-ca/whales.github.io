@@ -63,7 +63,7 @@ const DataMap = (
         const createScaleColorMap = () => {
             let colorMap: ColorMapType = [];
             let histMax = hist[1][hist[1].length-1];
-            let histMin = hist[1][0];
+            let histMin = Math.min(hist[1][0], (Math.round(dataRange[0]*100)/100 || 0));
             setDataRangeMin(histMin);
             setDataRangeMax(histMax);
             const normalizedDataRange = hist[1].map((val: number) => {
