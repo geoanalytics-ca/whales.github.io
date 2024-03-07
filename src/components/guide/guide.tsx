@@ -101,7 +101,8 @@ const UserGuideModal: React.FC = () => {
                             </GuideText>
                             <GuideText>
                                 To define your time frame, click on the date field to open the date picker. 
-                                You can easily navigate through different months and years. Once you find the desired date, click on it to select. 
+                                You can easily navigate through different months and years. 
+                                Once you find the desired date, click on it to select. 
                                 The selected date will then be displayed in the date field.
                             </GuideText>
                             <GuideText className="flex justify-center w-100">
@@ -118,7 +119,8 @@ const UserGuideModal: React.FC = () => {
                                 <Image src={collectionSelect} alt="Collection Selection Interface" />
                             </GuideText>
                             <GuideText>
-                                The image above illustrates the collection selection interface. Once you've made your selection, it will be highlighted as shown below.
+                                The image above illustrates the collection selection interface. 
+                                Once you have made your selection, it will be highlighted as shown below.
                             </GuideText>
                             <GuideText className="flex justify-center w-100">
                                 <Image src={collectionSelected} alt="Selected Collection Highlighted" />
