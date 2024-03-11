@@ -1,9 +1,6 @@
 data
 run-titiler.sh
-<<<<<<< HEAD
-
-=======
->>>>>>> main
+.idea/
 # Logs
 logs
 *.log
