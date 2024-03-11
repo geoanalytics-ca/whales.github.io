@@ -1,7 +1,6 @@
 data
 run-titiler.sh
 .idea/
-
 # Logs
 logs
 *.log
