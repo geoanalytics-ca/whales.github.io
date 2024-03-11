@@ -53,7 +53,10 @@ const DataMap = (
                 },
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                httpsAgent: new https.Agent({
+                    rejectUnauthorized: false
+                })
             }).then((response : any) => {
                 let respData = response.data;
                 console.log(respData);
