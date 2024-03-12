@@ -3,7 +3,8 @@ import {
     Modal,
     ModalHeader,
     ModalContent,
-    ModalFooter
+    ModalFooter,
+    Button
  } from "@nextui-org/react";
 import Image from 'next/image';
 import { FaInfo } from "react-icons/fa";
@@ -57,7 +58,10 @@ const UserGuideModal: React.FC = () => {
 
     return (
         <div>
-            <FaInfo size={20} onClick={openModal} />
+            <Button className="h-7" onClick={openModal}>
+                <FaInfo size={20} />
+                User Guide
+            </Button>
             <Modal
                 className="z-2 w-2/3 h-4/5 overflow-y-auto" 
                 size={"3xl"}

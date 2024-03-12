@@ -38,27 +38,21 @@ const Stream2 = () => {
   return (
     <>
     <Layout className='layout'>
-      <Head>
-        <title>DataMap</title>
-        <meta name="description" content="Create mapping apps with Next.js Leaflet Starter" />
-        <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-        <MapComponent 
-          className="stream2-map" 
-          center={mapCenter} zoom={mapZoom} mapData={mapData} 
-          colorMapName={colorMap} dataRange={dataRange}
-          scale={scale} units={units}
+      <MapComponent 
+        className="stream2-map" 
+        center={mapCenter} zoom={mapZoom} mapData={mapData} 
+        colorMapName={colorMap} dataRange={dataRange}
+        scale={scale} units={units}
+        >
+      </MapComponent>
+      <Card>
+        <DataComponent 
+          mapCenter={mapCenter} setMapCenter={setMapCenter} mapZoom={mapZoom} setMapData={setMapData}
+          setColorMap={setColorMap} setDataRange={setDataRange} setScale={setScale}
+          setUnits={setUnits}
           >
-        </MapComponent>
-        <Card>
-          <DataComponent 
-            mapCenter={mapCenter} setMapCenter={setMapCenter} mapZoom={mapZoom} setMapData={setMapData}
-            setColorMap={setColorMap} setDataRange={setDataRange} setScale={setScale}
-            setUnits={setUnits}
-            >
-          </DataComponent>
-        </Card>
+        </DataComponent>
+      </Card>
     </Layout>
     </>
   )
