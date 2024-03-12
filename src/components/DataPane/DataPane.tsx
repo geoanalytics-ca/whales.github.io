@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Catalog, Collection, Asset, STACLink } from '../../stac/StacObjects';
 import { FaImage, FaMap } from "react-icons/fa";
 import { GiWhaleTail } from "react-icons/gi";
+import { IoCloudDownloadOutline } from "react-icons/io5";
 import { 
     Card,
     CardBody,
@@ -22,6 +23,7 @@ import {
     useDisclosure,
     Button,
     Image,
+    Link
 } from "@nextui-org/react";
 
 type assetLink = {
@@ -55,15 +57,16 @@ const DataPane = (
     const [itemLinks, setItemLinks] = useState<STACLink[]>([]);
     const [itemVisProperties, setItemVisProperties] = useState<itemVisProperties>({});
     const [assetLinks, setAssetLinks] = useState<assetLink[]>([]);
+    const [assetHref, setAssetHref] = useState<string>('');
     // Track the state of the query parameters
     const [startDate, setStartDate] = useState(() => {
         const date = new Date();
-        date.setDate(date.getDate() - 2);
+        date.setDate(date.getDate() - 3);
         return date.toISOString().split('T')[0];
     });
     const [endDate, setEndDate] = useState(() => {
         const date = new Date();
-        date.setDate(date.getDate() - 1);
+        date.setDate(date.getDate() - 2);
         return date.toISOString().split('T')[0];
     });
     // Track which Item's should be rendered
@@ -218,6 +221,16 @@ const DataPane = (
             )
     };
 
+    const downloadAsset = async (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+        const thisAssetHref = event.currentTarget.getAttribute('name');
+        (thisAssetHref) ? (
+            setAssetHref(thisAssetHref),
+            onOpen()
+        ) : (
+            console.log('No item href')
+        )
+    }
+
     const renderOnMap = async (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
         console.log('Render on Map');
         const assetHref = event.currentTarget.getAttribute('name');
@@ -244,9 +257,39 @@ const DataPane = (
         <Card className='datapane'>
             <Modal className="z-2" size={"3xl"} isOpen={isOpen} onOpenChange={onOpenChange} onClose={onClose}>
                 <ModalContent>
-                    <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
+                    <ModalHeader className="flex flex-col gap-1">Preview</ModalHeader>
                     <ModalBody>
                         <Image src={previewLink} alt='' />
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="danger" variant="light" onPress={onClose}>
+                        Close
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+            <Modal className="z-2" size={"3xl"} isOpen={isOpen} onOpenChange={onOpenChange} onClose={onClose}>
+                <ModalContent>
+                    <ModalHeader className="flex flex-col gap-1 w-half">Download Asset</ModalHeader>
+                    <ModalBody>
+                        <Button 
+                            color="primary" 
+                            variant="ghost" 
+                            onClick={async () => {
+                                const response = await fetch(assetHref);
+                                const blob = await response.blob();
+                                const url = window.URL.createObjectURL(blob);
+                                const link = document.createElement('a');
+                                link.href = url;
+                                link.setAttribute('download', assetHref.split('/').pop() as string);
+                                document.body.appendChild(link);
+                                link.click();
+                                link.parentNode?.removeChild(link);
+                                onClose();
+                            }}
+                        >
+                            Download: {assetHref.split('/').pop()?.toString()}
+                        </Button>
                     </ModalBody>
                     <ModalFooter>
                         <Button color="danger" variant="light" onPress={onClose}>
@@ -338,16 +381,19 @@ const DataPane = (
                                             assetLinks.map((asset: assetLink) => (
                                             <TableRow key={asset.assetName}>
                                                 <TableCell>{asset.assetName}</TableCell>
-                                                <TableCell>{asset.parent}</TableCell>
-                                                {(asset.assetName === 'image' || asset.assetName == 'preview') ? (
+                                                {/* <TableCell>{asset.parent}</TableCell> */}
+                                                {/* {(asset.assetName === 'image' || asset.assetName == 'preview') ? (
                                                 <TableCell>
                                                     <FaImage name={asset.href} size={20} onClick={showPreview} alt='' />
                                                 </TableCell>
-                                                ) : (
+                                                ) : ( */}
+                                                <TableCell>
+                                                    <IoCloudDownloadOutline name={asset.href} size={20} onClick={downloadAsset} alt='' />
+                                                </TableCell>
                                                 <TableCell>
                                                     <FaMap name={asset.href} size={20} onClick={renderOnMap} alt=''/>
                                                 </TableCell>
-                                                )}
+                                                {/* )} */}
                                             </TableRow>
                                         ))) || <></>
                                     }
