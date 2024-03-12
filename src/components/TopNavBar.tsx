@@ -17,23 +17,11 @@ const AcmeLogo = () => (
 const TopBar = () => {
   return (
     <Navbar className='navbar'>
-      <NavbarBrand>
-        <AcmeLogo />
-        <p className="font-bold text-inherit">Data Map</p>
-      </NavbarBrand>
-      {/* <NavbarContent justify="center">
-        <NavbarItem>
-          <Link href="#">
-            Home
-          </Link>
-        </NavbarItem>
-        <NavbarItem isActive>
-          <Link href="#" aria-current="page">
-            About
-          </Link>
-        </NavbarItem>
-      </NavbarContent> */}
-      <UserGuideModal />
+          <NavbarBrand>
+            <AcmeLogo />
+            <p className="font-bold text-inherit">Data Map</p>
+          </NavbarBrand>
+            <UserGuideModal />
     </Navbar>
   );
 }
