@@ -30,17 +30,15 @@ export interface ReportProps {
 const Report: React.FC<ReportProps> = () => {
 
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
-    const [pdf, setPdf] = React.useState('');
     const [fileURL, setFileURL] = React.useState('');
 
 
     const handlePdf = (pdf: string) => {
-        setPdf(pdf);
-        getReport();
+        getReport(pdf);
         onOpen();
     }
 
-    const getReport = () => {
+    const getReport = (pdf: string) => {
         const url = `${originUrl}/${blobPrefix}/${pdf}`;
             console.log(url);
             setFileURL(url);
@@ -80,7 +78,7 @@ const Report: React.FC<ReportProps> = () => {
             <DropdownItems />
             <Modal className="z-2 h-screen" size={'5xl'} isOpen={isOpen} onOpenChange={onOpenChange} onClose={onClose}>
                 <ModalContent>
-                    <ModalHeader className="flex flex-col gap-1">{pdf}</ModalHeader>
+                    <ModalHeader className="flex flex-col gap-1">Preview</ModalHeader>
                     <ModalBody >
                         { (fileURL !== '' && 
                             <iframe 
