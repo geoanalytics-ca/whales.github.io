@@ -10,6 +10,12 @@ const config: Config = {
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    colors: {
+      'black': '#000000',
+      'white': '#ffffff',
+      'slate': '#cbd5e1',
+      'buttonbg': '#d4d4d8',
+    },
     extend: {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

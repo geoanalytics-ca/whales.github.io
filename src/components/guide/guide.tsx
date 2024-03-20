@@ -7,8 +7,7 @@ import {
     Button
  } from "@nextui-org/react";
 import Image from 'next/image';
-import { FaInfo } from "react-icons/fa";
-import { FaImage, FaMap } from "react-icons/fa";
+import { FaMap, FaInfo } from "react-icons/fa";
 import { GiWhaleTail } from "react-icons/gi";
 import styled from 'styled-components';
 
