@@ -89,7 +89,7 @@ const DataPane = (
 
         if (itemId.includes('L3') && itemId.includes('CHL-PCA')) {
             return `L3_${date}_CHL_PCA`;
-        } else if (itemId.includes('L4') && itemId.includes('GAP_FREE_CHL_PCA')) {
+        } else if (itemId.includes('L4') && itemId.includes('CHL-PCA')) {
             return `L4_${date}_GAP_FREE_CHL_PCA`;
         } else if (itemId.includes('L3') && itemId.includes('PP')) {
             return `L3_${date}_PP`;
