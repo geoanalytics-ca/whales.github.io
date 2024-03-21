@@ -1,7 +1,7 @@
 import Head from 'next/head';
 
 import TopBar from '@components/TopNavBar';
-import Footer from '@components/BottomBar';
+import BottomBar from '@components/BottomBar';
 
 const Layout = ({ children }: React.PropsWithChildren<{ className: string }>) => {
   return (
@@ -15,7 +15,7 @@ const Layout = ({ children }: React.PropsWithChildren<{ className: string }>) =>
       </Head>
       <TopBar />
       <main>{children}</main>
-      <Footer />
+      <BottomBar />
     </div>
   );
 };
