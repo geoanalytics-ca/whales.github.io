@@ -75,6 +75,29 @@ const DataPane = (
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
     const [previewLink, setPreviewLink] = useState<string>('');
         
+    const nameMap = (input: string) => {
+        if (input === 'acri') {
+            return 'Ocean color remote sensing';
+        }
+        return input;
+    };
+
+    const shortenItemId = (itemId: string) => {
+        const datePattern = /\d{8}/;
+        const dateMatch = itemId.match(datePattern);
+        const date = dateMatch ? dateMatch[0] : 'YYYYMMDD';
+
+        if (itemId.includes('L3') && itemId.includes('CHL-PCA')) {
+            return `L3_${date}_CHL_PCA`;
+        } else if (itemId.includes('L4') && itemId.includes('GAP_FREE_CHL_PCA')) {
+            return `L4_${date}_GAP_FREE_CHL_PCA`;
+        } else if (itemId.includes('L3') && itemId.includes('PP')) {
+            return `L3_${date}_PP`;
+        } else {
+            return itemId;
+        }
+    };
+
     const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.value > endDate) {
             setEndDate(event.target.value);
@@ -196,7 +219,7 @@ const DataPane = (
                         {
                         (catalog && catalog.links) ? (
                             catalog.links.filter((link: STACLink) => link.rel === 'child').map((link: STACLink) =>
-                                <Radio className="flex-1" key={link.title} value={link.title}>
+                                <Radio className="flex-1" key={link.title} value={nameMap(link.title)}>
                                     {link.title}
                                 </Radio>
                             )
@@ -341,7 +364,7 @@ const DataPane = (
                                     {
                                         itemLinks.map((item: STACLink) => (
                                         <TableRow key={item.title} onClick={() => getItemAssetLinks(item.href)} >
-                                            <TableCell>{item.title}</TableCell>
+                                            <TableCell>{shortenItemId(item.title)}</TableCell>
                                         </TableRow>
                                         ))
                                     }
