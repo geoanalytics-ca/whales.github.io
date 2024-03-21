@@ -219,8 +219,8 @@ const DataPane = (
                         {
                         (catalog && catalog.links) ? (
                             catalog.links.filter((link: STACLink) => link.rel === 'child').map((link: STACLink) =>
-                                <Radio className="flex-1" key={link.title} value={nameMap(link.title)}>
-                                    {link.title}
+                                <Radio className="flex-1" key={link.title} value={link.title}>
+                                    {nameMap(link.title)}
                                 </Radio>
                             )
                         ) : (
