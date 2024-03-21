@@ -1,6 +1,7 @@
 import React from 'react';
 import {Navbar, NavbarBrand} from "@nextui-org/react";
 
+import ContactBanner from './Contact';
 import UserGuideModal from './guide';
 import Report from './Report';
 
@@ -26,6 +27,7 @@ const TopBar = () => {
           </NavbarBrand>
             <Report />
             <UserGuideModal />
+            <ContactBanner />
     </Navbar>
   );
 }
