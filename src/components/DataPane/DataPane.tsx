@@ -4,6 +4,8 @@ import { Catalog, Collection, Asset, STACLink } from '../../stac/StacObjects';
 import { FaImage, FaMap } from "react-icons/fa";
 import { GiWhaleTail } from "react-icons/gi";
 import { IoCloudDownloadOutline } from "react-icons/io5";
+import { DayPicker } from 'react-day-picker';
+import 'react-day-picker/dist/style.css';
 import { 
     Card,
     CardBody,
@@ -23,7 +25,7 @@ import {
     useDisclosure,
     Button,
     Image,
-    Link
+    Accordion, AccordionItem
 } from "@nextui-org/react";
 
 type assetLink = {
@@ -59,22 +61,48 @@ const DataPane = (
     const [assetLinks, setAssetLinks] = useState<assetLink[]>([]);
     const [assetHref, setAssetHref] = useState<string>('');
     // Track the state of the query parameters
-    const [startDate, setStartDate] = useState(() => {
-        const date = new Date();
-        date.setDate(date.getDate() - 3);
-        return date.toISOString().split('T')[0];
-    });
-    const [endDate, setEndDate] = useState(() => {
-        const date = new Date();
-        date.setDate(date.getDate() - 2);
-        return date.toISOString().split('T')[0];
-    });
+    const [startDate, setStartDate] = React.useState<Date>();
+    const [startDateTitle, setStartDateTitle] = React.useState<string>('Start Date');
+    const [endDate, setEndDate] = React.useState<Date>();
+    const [endDateTitle, setEndDateTitle] = React.useState<string>('End Date');
     // Track which Item's should be rendered
     const [selectedCollection, setSelectedCollection] = useState<STACLink>(); // Track selected collections
     // PNG Modal
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
     const [previewLink, setPreviewLink] = useState<string>('');
         
+
+    const handleStartDateChange = (day: Date, modifiers: any) => {
+        if (day > new Date()) {
+            setStartDate(new Date());
+            setStartDateTitle(new Date().toISOString().split('T')[0]);
+        } else if (endDate && day > endDate) {
+            setEndDate(day);
+            setEndDateTitle(day.toISOString().split('T')[0]);
+            setStartDate(day);
+            setStartDateTitle(day.toISOString().split('T')[0]);
+        } else {
+            setStartDate(day);
+            setStartDateTitle(day.toISOString().split('T')[0]);
+        }
+    };
+
+    const handleEndDateChange = (day: Date, modifiers: any) => {
+        if (day > new Date()) {
+            setEndDate(new Date());
+            setEndDateTitle(new Date().toISOString().split('T')[0]);
+        } else if (!startDate) {
+            setStartDate(day);
+            setStartDateTitle(day.toISOString().split('T')[0]);
+        } else if (day < startDate) {
+            setEndDate(startDate);
+            setEndDateTitle(startDate.toISOString().split('T')[0]);
+        } else {
+            setEndDate(day);
+            setEndDateTitle(day.toISOString().split('T')[0]);
+        }
+    };
+
     const nameMap = (input: string) => {
         if (input === 'acri') {
             return 'Ocean color remote sensing';
@@ -108,20 +136,6 @@ const DataPane = (
         }
     };
 
-    const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.value > endDate) {
-            setEndDate(event.target.value);
-        }
-        setStartDate(event.target.value);
-    };
-    
-    const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.value < startDate) {
-            setStartDate(event.target.value);
-        }
-        setEndDate(event.target.value);
-    };
-
     useEffect(() => {
         const handleCollectionChange = async () => {
             let collectionId = selected;
@@ -151,7 +165,7 @@ const DataPane = (
 
         const queriedItems: STACLink[] = [];
 
-        if (startDate < endDate && selectedCollection !== undefined) {
+        if (startDate && endDate && startDate < endDate && selectedCollection !== undefined) {
             console.log('Collection:', selectedCollection);
             fetchCollection(selectedCollection.href).then((collection) => {
                 fetchItems(collection, startDate, endDate).then((items) => {
@@ -332,18 +346,40 @@ const DataPane = (
                 </ModalContent>
             </Modal>
             <CardBody>
-                <div className="flex space-x-4">
-                    <Card className="flex-1">
-                        <CardBody>
-                            <label htmlFor="startDateTime">Start Date: </label>
-                            <input type="date" id="startDateTime" value={startDate} onChange={handleStartDateChange} />
-                        </CardBody>
-                    </Card>
+                <div className="flex space-x-4 overflow-visible z-100">
                     <Card className="flex-1 w-full">
                         <CardBody>
-                            <label htmlFor="endDateTime">End Date: </label>
-                            <input type="date" id="endDateTime" value={endDate} onChange={handleEndDateChange} />
+                            <Accordion isCompact={true}>
+                                <AccordionItem title={startDateTitle}>
+                                    <DayPicker 
+                                        mode="single"
+                                        selected={startDate} 
+                                        onDayClick={handleStartDateChange}
+                                    />
+                                </AccordionItem>
+                                <AccordionItem title={endDateTitle}>
+                                    <DayPicker 
+                                        mode="single"
+                                        selected={endDate}
+                                        onDayClick={handleEndDateChange}
+                                    />
+                                </AccordionItem>
+                            </Accordion>
+                            {/* <label htmlFor="startDateTime">Start Date: </label>
+                            <input type="date" id="startDateTime" value={startDate} onChange={handleStartDateChange} /> */}
                         </CardBody>
+                    {/* </Card> */}
+                    {/* <Card className="flex-1 w-full"> */}
+                        {/* <CardBody>
+                            <DayPicker 
+                                mode="single"
+                                selected={endDate}
+                                onSelect={setEndDate}
+                                footer={<p>End Date</p>}
+                            />
+                            {/* <label htmlFor="endDateTime">End Date: </label>
+                            <input type="date" id="endDateTime" value={endDate} onChange={handleEndDateChange} /> */}
+                        {/* </CardBody> */}
                     </Card>
                 </div>
                 <div className="flex">

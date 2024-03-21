@@ -40,6 +40,10 @@ body {
   max-width: 100%;
 }
 
+.div.react-datepicker-popper {
+  z-index: 300 !important;
+}
+
 .stream2-map {
   position: fixed;
   top: 40px;
@@ -155,14 +159,14 @@ body {
   background-color: #003080;
 }
 
-.date-box {
+/* .date-box {
   display: flex;
   align-items: left;
   justify-content: left;
   margin: 10px;
   height: 80%;
   width: 100%;
-}
+} */
 
 .collection-pane {
   display: flex;

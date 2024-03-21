@@ -15,11 +15,12 @@ import collectionSelected from "@imgs/collection-selected.png";
 import collectionSelect from "@imgs/collection-select.png";
 import assetList from "@imgs/asset-list.png";
 import assetSelect from "@imgs/asset-select.png";
-import dateSelect from "@imgs/date-select.png";
+import dateSelect from "@imgs/daypicker.png";
+import startDate from "@imgs/pickStartDate.png";
+import endDate from "@imgs/pickEndDate.png";
 import exampleOutput from "@imgs/example-output.png";
 import foundItems from "@imgs/found-items.png";
 import searchButton from "@imgs/search-button.png";
-import startDateSelect from "@imgs/start-date-select.png";
 
 const GuideContainer = styled.div`
     margin: 20px;
@@ -109,7 +110,8 @@ const UserGuideModal: React.FC = () => {
                                 The selected date will then be displayed in the date field.
                             </GuideText>
                             <GuideText className="flex justify-center w-100">
-                                <Image className="w-1/3" src={startDateSelect} alt="Start Date Select" />
+                                <Image className="w-1/3" src={startDate} alt="Start Date Select" />
+                                <Image className="w-1/3" src={endDate} alt="End Date Select" />
                             </GuideText>
                         </GuideContainer>
                         <GuideContainer>

@@ -36,12 +36,12 @@ export const fetchCollection = async (collectionLink: string): Promise<any> => {
     }
 }
 
-export const fetchItems = async (collection: Collection, startDateTime: string, endDateTime: string): Promise<any> => {
+export const fetchItems = async (collection: Collection, startDateTime: Date, endDateTime: Date): Promise<any> => {
     const filteredItems: Item[] = [];
     console.log('Collection ID:', collection.id); 
     const searchDates: string[] = [];
-    const startDate: Date = new Date(startDateTime)
-    const endDate: Date = new Date(endDateTime)
+    const startDate: Date = typeof startDateTime === 'string' ? new Date(startDateTime) : startDateTime;
+    const endDate: Date = typeof endDateTime === 'string' ? new Date(endDateTime) : new Date(endDateTime)
     console.log('startDate', startDate)
     console.log('endDate', endDate)
     const currentDate: Date = new Date(startDate);
