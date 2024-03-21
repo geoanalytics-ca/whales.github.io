@@ -98,6 +98,16 @@ const DataPane = (
         }
     };
 
+    const shortAssetName = (assetName: string) => {
+        if (assetName.includes('L3') && assetName.includes('CHL-PCA')) {
+            return `CHL-PCA`;
+        } else if (assetName.includes('L4') && assetName.includes('CHL-PCA')) {
+            return `GAP-FREE-CHL-PCA`;
+        } else {
+            return assetName;
+        }
+    };
+
     const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.value > endDate) {
             setEndDate(event.target.value);
@@ -403,13 +413,7 @@ const DataPane = (
                                         (assetLinks.length > 0 &&
                                             assetLinks.map((asset: assetLink) => (
                                             <TableRow key={asset.assetName}>
-                                                <TableCell>{asset.assetName}</TableCell>
-                                                {/* <TableCell>{asset.parent}</TableCell> */}
-                                                {/* {(asset.assetName === 'image' || asset.assetName == 'preview') ? (
-                                                <TableCell>
-                                                    <FaImage name={asset.href} size={20} onClick={showPreview} alt='' />
-                                                </TableCell>
-                                                ) : ( */}
+                                                <TableCell>{shortAssetName(asset.assetName)}</TableCell>
                                                 <TableCell>
                                                     <IoCloudDownloadOutline name={asset.href} size={20} onClick={downloadAsset} alt='' />
                                                 </TableCell>
